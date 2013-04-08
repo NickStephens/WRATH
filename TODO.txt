@@ -1,0 +1,5 @@
+TODO:
+
+* Write a way to specify on the command line which TCP flags to set.
+* Write a suite of tools that parses and writes HTTP commands at the packet level
+* Write a module to treat command-line arguments as key-value pairs
