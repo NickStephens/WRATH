@@ -18,8 +18,10 @@ int main(int argc, char *argv[]) {
 
 	struct arg_kv **user_vals;
 	arg_eval(argc, argv, user_vals);
-	long max = user_vals + (sizeof user_vals / 4); 
-	for(user_vals; user_vals < max; user_vals++) {
+	printf("%d\n", argc);
+	printf("%d\n", (sizeof user_vals));
+	long max = user_vals + (sizeof user_vals);
+	for(user_vals; user_vals < (max - 4); user_vals++) {
 		printf("0x%x\n", *user_vals);
 		printf("key: %s @ 0x%x\n", (*user_vals)->key, (*user_vals)->key);
 		printf("value: %s @ 0x%x\n", (*user_vals)->value,(*user_vals)->value);
