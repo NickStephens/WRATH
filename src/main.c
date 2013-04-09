@@ -16,8 +16,12 @@ int main(int argc, char *argv[]) {
 		custom (allows the user to send a packet matching the encoding of the selected file)
 	*/
 
-	struct arg_kv pairs[5];
+	struct arg_kv *pairs;
 	arg_eval(argc, argv, pairs);
+
+	int i;
+	for (i = 0; strcmp(pairs[i].key, "\0") == 0; i++)
+		printf("key: %s, value: %s\n", pairs[i].key, pairs[i].value);
 
 	/* Algorithm
 		first sniff a packet that matches the berkeley packet filter syntax (the expression will be delivered via wrath-argj)

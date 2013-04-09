@@ -41,8 +41,6 @@ void arg_eval(int argc, char *argv[], struct arg_kv pairs[]) {
 		}
 		if (strcmp( cell.key, "\0") == 0)
 			usage_error("unrecognized option");
-//(strcat("unrecognized option ",opt))
-//(strcat(strcat(strcat("missing ",cell.key)," for option "),cell.flag))
 	}
 }
 
