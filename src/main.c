@@ -16,16 +16,8 @@ int main(int argc, char *argv[]) {
 		custom (allows the user to send a packet matching the encoding of the selected file)
 	*/
 
-	struct arg_kv **user_vals;
-	arg_eval(argc, argv, user_vals);
-	printf("%d\n", argc);
-	printf("%d\n", (sizeof user_vals));
-	long max = user_vals + (sizeof user_vals);
-	for(user_vals; user_vals < (max - 4); user_vals++) {
-		printf("0x%x\n", *user_vals);
-		printf("key: %s @ 0x%x\n", (*user_vals)->key, (*user_vals)->key);
-		printf("value: %s @ 0x%x\n", (*user_vals)->value,(*user_vals)->value);
-	}
+	struct arg_values *user_values;
+	arg_eval(argc, argv, user_values);
 
 	// printf("key: %s, value: %s", pairs[0]->key, pairs[1]->value);
 

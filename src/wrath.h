@@ -6,4 +6,4 @@
 
 // takes a list of command-line arguments
 // and returns a pointer to an array of key-value pairs
-void arg_eval(int, char **, struct arg_kv **);
+void arg_eval(int, char **, struct arg_values *);

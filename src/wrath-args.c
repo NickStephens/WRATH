@@ -10,54 +10,68 @@
 	       -f input file \n \
 	       -tflag [-tS, -tA, -tF, -tP, -tU, -tR] \n"        
 
-const struct key_table_cell key_table[] = { 
-	{"-i", "interface"}, // listening interface
-	{"-f", "input-file"}, // file with application-level encoding
-	{"-tflag", "tcp flag"}, // the tcp flag to set
-	{"-o", "operation"},
-	{"-fil", "filter"},
-					  };
-
-struct arg_kv *get_additional(char *, char *);
-void usage_error(char *);
+void usage_error(int, int, char *);
+void initialize_tcpflags(struct arg_values *);
 
 // modifies the pairs array
-void arg_eval(int argc, char *argv[], struct arg_kv **pairs) {
+void arg_eval(int argc, char *argv[], struct arg_values *values) {
 	char *opt;
 	int i;
-	/* for later
-	if (argc < 2)
-		usage_error("missing parameters");
-	filter = argv[argc - 1];
-	operation = argv[argc - 2];
-	*/
-	for(i = 1; i < argc; i++) { // this will have to change to (argc - 2) when operation and filter are used	
+	initialize_tcpflags(values);
+	for (i = 1; i < argc; i++) { // skipping first argument, program name
 		opt = argv[i];
-		if (argc - i > 0) {
-			char *next = argv[++i];
-			*pairs = get_additional(opt, next);
-		} else
-			usage_error("missing parameter");
-		pairs++;	
-	}
-}
-
-struct arg_kv *get_additional(char *scanned, char *next) {
-	int j;
-	for (j = 0; j < (sizeof key_table / sizeof (struct arg_kv)); j++) {
-		if (strcmp(scanned, key_table[j].flag) == 0) {
-			struct arg_kv *ret;
-			ret = (struct arg_kv *) malloc(sizeof (struct arg_kv));
-			ret->key = key_table[j].key;
-			ret->value = next;
-			return ret;
+		if (strcmp(opt, "-i") == 0) {
+			char *interface = argv[++i];
+			usage_error(i, argc, "missing parameter for -i");
+			values->interface = interface;
+		}
+		else if (strcmp(opt, "-f") == 0) {
+			char *file = argv[++i];
+			usage_error(i, argc, "missing parameter for -f");
+			values->input_file = file;
+		}
+		else if (strcmp(opt, "-tU") == 0) {
+			values->tcp_urg = 1;
+		}
+		else if (strcmp(opt, "-tA") == 0) {
+			values->tcp_ack = 0;   // mark ack flag off
+		}
+		else if (strcmp(opt, "-tP") == 0) {
+			values->tcp_psh = 1;
+		}
+		else if (strcmp(opt, "-tR") == 0) {
+			values->tcp_rst = 1;
+		}
+		else if (strcmp(opt, "-tS") == 0) {
+			values->tcp_syn = 1;
+		}
+		else if (strcmp(opt, "-tF") == 0) {
+			values->tcp_fin = 1;
+		}
+		else {
+			if (i == argc) // if it's the final argument and not an option, it's a bpf
+				values->filter = opt;
+			if (i == (argc - 2)) { // an operation
+				values->operation = opt;
+				values->command = argv[++i];
+			}
 		}
 	}
-	usage_error("unrecognized flag");
 }
 
-void usage_error(char *mesg) {
-	printf("%s\n", mesg);
-	printf("%s", USAGE);
-	exit(EXIT_FAILURE);
+void initialize_tcpflags(struct arg_values *values) {
+	values->tcp_urg = 0;	
+	values->tcp_ack = 1;	// by default ack is set
+	values->tcp_psh = 0;	
+	values->tcp_rst = 0;	
+	values->tcp_syn = 0;	
+	values->tcp_fin = 0;	
+}
+
+void usage_error(int pos, int argc, char *mesg) {
+	if (pos >= argc) {	
+		printf("%s\n", mesg);
+		printf("%s", USAGE);
+		exit(EXIT_FAILURE);
+	}
 }
