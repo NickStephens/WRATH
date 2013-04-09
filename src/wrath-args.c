@@ -8,22 +8,16 @@
 	       \n \
 	       -i interface \n \
 	       -f input file \n \
-	       -tflag [-tS, -tA, -tF, -tP, -tU, -tR] \n "        
-	
+	       -tflag [-tS, -tA, -tF, -tP, -tU, -tR] \n"        
 
-struct key_table_cell {
-	char *flag;
-	char *key;
-};
-
-const struct key_table_cell key_table[] = { {"-i", "interface"},  // listening interface
-					    {"-f", "input-file"}, // file with application-level encoding
-					    {"-tflag", "tcp flag"}, // the tcp flag to set
-					    {"\0", "\0"},	  // no op, end of table marker
+const struct key_table_cell key_table[] = { 
+	{"-i", "interface"}, // listening interface
+	{"-f", "input-file"}, // file with application-level encoding
+	{"-tflag", "tcp flag"}, // the tcp flag to set
+	{"\0", "\0"}, // no op, end of table marker
 					  };
 
-// returns a pointer to an array of arg-kv structs
-// the result will have to be cast, like pairs = (arg-kv *) arg-eval(argv);
+// modifies the pairs array
 void arg_eval(int argc, char *argv[], struct arg_kv pairs[]) {
 	char *opt;
 	int arg_cnt = 0;
