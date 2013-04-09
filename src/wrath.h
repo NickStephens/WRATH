@@ -1,6 +1,7 @@
 #include <libnet.h>
 #include <pcap.h>
-// This file includes prototypes for all functions in the 
+#include "wrath-structs.h"
+// This file includes prototypes for all functions to export in the WRATH project
 
 // #include "wrath-args.h"
 // #include "http-injectory.h"
@@ -8,4 +9,4 @@
 
 // takes a list of command-line arguments
 // and returns a pointer to an array of key-value pairs
-void *arg-eval(int, char **);
+void arg_eval(int, char **, struct arg_kv *);

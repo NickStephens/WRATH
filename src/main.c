@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-//#include "wrath.h"
+#include "wrath.h"
 //#include "wrath-args.h" functions which return an array of key-value pairs given argv[]
 //#include "http-injector.h" functions which parse HTTP commands and insert it into the proper packet header and payload
 //#include "ip-tcp-craft.h" functions automating the tedious low-level packet crafting process
@@ -15,14 +15,9 @@ int main(int argc, char *argv[]) {
 		ftp
 		custom (allows the user to send a packet matching the encoding of the selected file)
 	*/
-	//char error[LIBNET_ERRBUF_SIZE];
 
-	char *s;
-	int i;
-	for(i = 0; i < argc; i++) {
-		s = argv[i];
-		printf("arg %s\n", s);
-	}
+	struct arg_kv pairs[5];
+	arg_eval(argc, argv, pairs);
 
 	/* Algorithm
 		first sniff a packet that matches the berkeley packet filter syntax (the expression will be delivered via wrath-argj)

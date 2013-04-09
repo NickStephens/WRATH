@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "wrath-structs.h"
 
 #define USAGE "usage: wrath [options] [operation] [filter] \n \
 	       example: wrath -i eth0 -f spook.html http \"src host 78.23.87.99\" \n \
@@ -9,11 +10,6 @@
 	       -f input file \n \
 	       -tflag [-tS, -tA, -tF, -tP, -tU, -tR] \n "        
 	
-
-struct arg_kv {
-	char *key;
-	char *value;
-};
 
 struct key_table_cell {
 	char *flag;
@@ -25,11 +21,6 @@ const struct key_table_cell key_table[] = { {"-i", "interface"},  // listening i
 					    {"-tflag", "tcp flag"}, // the tcp flag to set
 					    {"\0", "\0"},	  // no op, end of table marker
 					  };
-
-main(int argc, char *argv[]) {
-	struct arg_kv *pairs;
-	arg_eval(argc, argv, pairs);
-}
 
 // returns a pointer to an array of arg-kv structs
 // the result will have to be cast, like pairs = (arg-kv *) arg-eval(argv);
