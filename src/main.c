@@ -21,8 +21,8 @@ int main(int argc, char *argv[]) {
 	long max = user_vals + (sizeof user_vals / 4); 
 	for(user_vals; user_vals < max; user_vals++) {
 		printf("0x%x\n", *user_vals);
-		printf("key: %s\n", (*user_vals)->key);
-		printf("value: %s\n", (*user_vals)->value);
+		printf("key: %s @ 0x%x\n", (*user_vals)->key, (*user_vals)->key);
+		printf("value: %s @ 0x%x\n", (*user_vals)->value,(*user_vals)->value);
 	}
 
 	// printf("key: %s, value: %s", pairs[0]->key, pairs[1]->value);
