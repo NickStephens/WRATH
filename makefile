@@ -1,10 +1,11 @@
 SRCS=src/main.c src/wrath-args.c
+OBJS=main.o wrath-args.o
 
-wrath: 	objs
-	$(CC) -o wrath objs/*.o
+cleandir: wrath
+	  mv $(OBJS) objs	 
 
-movement: 	objects	
-		mv src/*.o objs	
+wrath: 	objects	
+	$(CC) -o wrath $(OBJS)
 
 objects: $(SRCS)
 	 $(CC) -c $(SRCS)
