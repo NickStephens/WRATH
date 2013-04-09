@@ -11,13 +11,13 @@
 	       -tflag [-tS, -tA, -tF, -tP, -tU, -tR] \n"        
 
 void usage_error(int, int, char *);
-void initialize_tcpflags(struct arg_values *);
+void initialize(struct arg_values *);
 
 // modifies the pairs array
 void arg_eval(int argc, char *argv[], struct arg_values *values) {
 	char *opt;
 	int i;
-	initialize_tcpflags(values);
+	initialize(values);
 	for (i = 1; i < argc; i++) { // skipping first argument, program name
 		opt = argv[i];
 		if (strcmp(opt, "-i") == 0) {
@@ -49,9 +49,9 @@ void arg_eval(int argc, char *argv[], struct arg_values *values) {
 			values->tcp_fin = 1;
 		}
 		else {
-			if (i == argc) // if it's the final argument and not an option, it's a bpf
+			if (i == (argc - 1)) // if it's the final argument and not an option, it's a bpf
 				values->filter = opt;
-			if (i == (argc - 2)) { // an operation
+			if (i == (argc - 3)) { // an operation
 				values->operation = opt;
 				values->command = argv[++i];
 			}
@@ -59,7 +59,7 @@ void arg_eval(int argc, char *argv[], struct arg_values *values) {
 	}
 }
 
-void initialize_tcpflags(struct arg_values *values) {
+void initialize(struct arg_values *values) {
 	values->tcp_urg = 0;	
 	values->tcp_ack = 1;	// by default ack is set
 	values->tcp_psh = 0;	

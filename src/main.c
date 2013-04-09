@@ -19,6 +19,10 @@ int main(int argc, char *argv[]) {
 	struct arg_values *user_values;
 	arg_eval(argc, argv, user_values);
 
+	printf("filter: %s\n", user_values->filter);
+	printf("operation: %s\n", user_values->operation);
+	printf("command: %s\n", user_values->command);
+
 	// printf("key: %s, value: %s", pairs[0]->key, pairs[1]->value);
 
 	/* Algorithm
