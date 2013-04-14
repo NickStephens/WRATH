@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
 	printf("operation: %s\n", user_values->operation);
 	printf("command: %s\n", user_values->command);
 
-	// 
+	wrath_position(user_values);
 
 	/* Algorithm
 		first sniff a packet that matches the berkeley packet filter syntax (the expression will be delivered via wrath-argj)
