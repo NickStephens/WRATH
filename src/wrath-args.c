@@ -66,6 +66,11 @@ void arg_eval(int argc, char *argv[], struct arg_values *values) {
 		else if (strcmp(opt, "-tF") == 0) { // FIN
 			values->tcp_fin = 1;
 		}
+		else if (strcmp(opt, "-n") == 0) { // count, the amount of packets for interface to victimize
+			char *capture_amount = argv[++i];
+			usage_error(i, argc, "missing paramter for -n");
+			values->count = atoi(capture_amount);
+		} 
 		else if (i == (argc - 1)) { // if it's the final argument and not an option, it's a bpf
 				if (*opt == '-') // if it's decorated like an option
 					usage_error(0,0,"unrecognized option");
@@ -99,6 +104,7 @@ void initialize(struct arg_values *values) {
 	values->tcp_rst = 0;	
 	values->tcp_syn = 0;	
 	values->tcp_fin = 0;	
+	values->count = -1;
 }
 
 /**
