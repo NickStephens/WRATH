@@ -27,15 +27,23 @@ void wrath_position(struct arg_values *cline_args) {
 	printf("Watching victims on %s\n", device);	
 
 	pcap_handle = pcap_open_live(device, 4096, 1, 0, errbuf); //snaplen is small (4kb) because we only need the headers
-
+	if (pcap_handle == NULL)
+		pcap_perror(pcap_handle, errbuf);
+	
 	// parse/compile bpf (if filter is null, skip this step)
-	if (cline_args->filter != NULL) { // if filter is set
-		struct bpf_program *fp;
-		if((pcap_compile(pcap_handle, fp, cline_args->filter, 1, PCAP_NETMASK_UNKNOWN)) == -1)
+	if (strcmp(cline_args->filter,"\0") != 0) { // if filter is set
+		struct bpf_program fp;
+		if((pcap_compile(pcap_handle, &fp, cline_args->filter, 0, 0)) == -1) {
 			pcap_perror(pcap_handle, "ERROR compiling filter");
-		pcap_setfilter(pcap_handle, fp);
+			exit(1); 
+		}
+		if(pcap_setfilter(pcap_handle, &fp) == -1) {
+			pcap_perror(pcap_handle, "ERROR setting filter");
+			exit(1);
+		}
 	}
 
+	printf("now looping\n");
 	int cap_amount = -1;
 	if (cline_args->count != -1) // if count is set
 		cap_amount = cline_args->count;
