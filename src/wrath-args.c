@@ -107,6 +107,23 @@ void initialize(struct arg_values *values) {
 	values->count = -1;
 }
 
+void nothing(struct arg_values *values) {
+	/*
+	values->operation = "\0";
+	values->command = "\0";
+	values->filter = "\0";
+	values->interface = "\0";
+	values->input_file = "\0";
+	*/
+	values->tcp_urg = 0;	
+	values->tcp_ack = 1;	// by default ack is set
+	values->tcp_psh = 0;	
+	//values->tcp_rst = 0;	
+	values->tcp_syn = 0;	
+	values->tcp_fin = 0;	
+	values->count = 0;
+}
+
 /**
  * terminates execution and prints an error
  * to catch bad command-line arguments.

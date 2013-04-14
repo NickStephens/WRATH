@@ -6,6 +6,8 @@
 // takes a list of command-line arguments
 // and returns a pointer to an array of key-value pairs
 void arg_eval(int, char **, struct arg_values *);
+void intialize(struct arg_values *);
+void nothing(struct arg_values *);
 
 // places wrath in a position to victimize the 
 // packets specified by the filter

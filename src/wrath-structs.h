@@ -1,13 +1,6 @@
 /*
  structure for argument evalutation
 */
-
-// argument key-value pair
-struct arg_kv {
-	char *key;
-	char *value;
-};
-
 struct arg_values {
 	char *interface; // listening interface
 	char *input_file; // application-level encoding

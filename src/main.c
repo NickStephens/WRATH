@@ -1,23 +1,11 @@
-#include <stdio.h>
-#include <string.h>
+#include <stdlib.h>
 #include "wrath.h"
-//#include "wrath-args.h" functions which return an array of key-value pairs given argv[]
-//#include "http-injector.h" functions which parse HTTP commands and insert it into the proper packet header and payload
-//#include "ip-tcp-craft.h" functions automating the tedious low-level packet crafting process
 
 int main(int argc, char *argv[]) {
-	/* Options WRATH should have
-		-i select interface to sniff and forge on
-		-f input file for payload
-	
-		operations:
-		http
-		ftp
-		custom (allows the user to send a packet matching the encoding of the selected file)
-	*/
 
 	struct arg_values *user_values;
-	arg_eval(argc, argv, user_values);
+	user_values = (struct arg_values *) malloc(sizeof (struct arg_values));
+	arg_eval(argc, argv, user_values);	
 
 	printf("[DEBUG]\n");
 	printf("filter: %s\n", user_values->filter);

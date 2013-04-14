@@ -15,16 +15,17 @@ void wrath_position(struct arg_values *cline_args) {
 	pcap_t *pcap_handle;
 	
 	if (strcmp(cline_args->interface, "\0") == 0) { // if interface is not set
-		printf("Looking for a device\n");
 		device = pcap_lookupdev(errbuf);
-			// pcap_perror(pcap_handle, "ERROR fetching interface");
+		if(device == NULL) {
+			fprintf(stderr, "ERROR FETCHING INTERFACE: %s %s\n", errbuf, "(are you root?)");
+			exit(1);
+		}
 	} else { // if interface is set
 		device = cline_args->interface;
 	}
 
 	printf("Watching victims on %s\n", device);	
 
-	/*
 	pcap_handle = pcap_open_live(device, 4096, 1, 0, errbuf); //snaplen is small (4kb) because we only need the headers
 
 	// parse/compile bpf (if filter is null, skip this step)
@@ -42,13 +43,4 @@ void wrath_position(struct arg_values *cline_args) {
 	pcap_loop(pcap_handle, cap_amount, wrath_inject, (u_char *) cline_args);
 
 	pcap_close(pcap_handle);
-	*/
-}
-
-main() {
-	char *device;
-	char errbuf[PCAP_ERRBUF_SIZE];
-
-	device = pcap_lookupdev(errbuf);
-	printf("%s\n", device);
 }
