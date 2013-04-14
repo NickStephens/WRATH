@@ -1,5 +1,15 @@
 TODO:
 
-* Write a way to specify on the command line which TCP flags to set.
+x Write a way to specify on the command line which TCP flags to set.
+x Write a module to treat command-line arguments as key-value pairs
+* Build injector/reacter which fires off forged packets created by the crafter as a reaction to network activity
+(NOTE: Session Hijacking is nearly impossible without be able to sniff the LAN. In terms of module design the
+ packet crafter should sit above (or be called by the injector) passing the injector all necessary information
+sniffed numbers (seq, ack, len) and argument values)
+* Build underlying IP/TCP packet crafter (needs to account for the command-line args!)
 * Write a suite of tools that parses and writes HTTP commands at the packet level
-* Write a module to treat command-line arguments as key-value pairs
+
+Questions:
+
+Will I have to do my own fragmentation if a packet exceeds the MTU of the network? Or will libnet handle 
+this aspect of packet injection? Am I creating a packet or a datagram?

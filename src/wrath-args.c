@@ -4,11 +4,11 @@
 #include "wrath-structs.h"
 
 #define USAGE "usage: wrath [options] [operation] [filter] \n \
-	       example: wrath -i eth0 -f spook.html http \"src host 78.23.87.99\" \n \
+	       example: wrath -i eth0 -f spook.html http \"OK 200\" \"src host 10.0.0.7\" \n \
 	       \n \
 	       -i interface \n \
 	       -f input file \n \
-	       -tflag [-tS, -tA, -tF, -tP, -tU, -tR] \n"        
+	       -tflag [-tS, -tA, -tF, -tP, -tU, -tR] \n"       
 
 void usage_error(int, int, char *);
 void initialize(struct arg_values *);
