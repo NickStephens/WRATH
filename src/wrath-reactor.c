@@ -1,4 +1,5 @@
 #include <pcap.h>
+#include <stdlib.h>
 #include "wrath-structs.h"
 
 void wrath_inject(u_char *, const struct pcap_pkthdr *, const u_char *);
@@ -7,24 +8,24 @@ void wrath_inject(u_char *, const struct pcap_pkthdr *, const u_char *);
 // places wrath in the position to capture the victims packets
 void wrath_position(struct arg_values *cline_args) {
 	struct pcap_pkthdr cap_header;
-	const u_char *packet, *pkt_date;
+	const u_char *packet, *pkt_data;
 	char errbuf[PCAP_ERRBUF_SIZE];
 	char *device;
 
 	pcap_t *pcap_handle;
 	
-	if (cline_args->interface == NULL) { // if interface is set
-		if ((device = pcap_lookupdev(errbuf)) == NULL)
-			pcap_perror(pcap_handle, "ERROR fetching interface");
-	} else
+	if (strcmp(cline_args->interface, "\0") == 0) { // if interface is not set
+		printf("Looking for a device\n");
+		device = pcap_lookupdev(errbuf);
+			// pcap_perror(pcap_handle, "ERROR fetching interface");
+	} else { // if interface is set
 		device = cline_args->interface;
+	}
 
-	printf("Victimizing on %s", device);	
+	printf("Watching victims on %s\n", device);	
 
-	pcap_handle = pcap_open_live(device, 4096, 1, 0, errbuf); //snaplen is small because we only need the headers
-	/* if(pcap_handle == NULL)
-		pcap_perror
-	*/
+	/*
+	pcap_handle = pcap_open_live(device, 4096, 1, 0, errbuf); //snaplen is small (4kb) because we only need the headers
 
 	// parse/compile bpf (if filter is null, skip this step)
 	if (cline_args->filter != NULL) { // if filter is set
@@ -39,4 +40,15 @@ void wrath_position(struct arg_values *cline_args) {
 		cap_amount = cline_args->count;
 
 	pcap_loop(pcap_handle, cap_amount, wrath_inject, (u_char *) cline_args);
+
+	pcap_close(pcap_handle);
+	*/
+}
+
+main() {
+	char *device;
+	char errbuf[PCAP_ERRBUF_SIZE];
+
+	device = pcap_lookupdev(errbuf);
+	printf("%s\n", device);
 }
