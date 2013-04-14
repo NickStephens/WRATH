@@ -20,4 +20,5 @@ struct arg_values {
 	char *operation; // application-level operation
 	char *command; // application-level command
 	char *filter; // bpf
+	int count; // how many packets to victimize
 };
