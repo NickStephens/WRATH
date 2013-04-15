@@ -3,14 +3,21 @@
 #include <stdio.h>
 #include "wrath-structs.h"
 
+#define PARAMETER_MISSING "missing parameter for "
+#define UNRECOGNIZED_OPTION "unrecognized option "
+
 #define USAGE "usage: wrath [options] [operation] [filter] \n \
 	       example: wrath -i eth0 -f spook.html http \"OK 200\" \"src host 10.0.0.7\" \n \
 	       \n \
+	       -h display this help \n \
+	       -n number of packets to intercept \n \
+	       -o explicitly supply operation \n \
+	       -c explicitly supply command \n \
 	       -i interface \n \
 	       -f input file \n \
 	       -tflag [-tS, -tA, -tF, -tP, -tU, -tR] \n"       
 
-void usage_error(int, int, char *);
+void usage_error(int, int, char *, char *);
 void initialize(struct arg_values *);
 
 /**
@@ -30,22 +37,22 @@ void arg_eval(int argc, char *argv[], struct arg_values *values) {
 		opt = argv[i];
 		if (strcmp(opt, "-i") == 0) { // interface
 			char *interface = argv[++i];
-			usage_error(i, argc, "missing parameter for -i");
+			usage_error(i, argc, "missing interface name for ", opt);
 			values->interface = interface;
 		}
 		else if (strcmp(opt, "-f") == 0) { // input file
 			char *file = argv[++i];
-			usage_error(i, argc, "missing parameter for -f");
+			usage_error(i, argc, "missing file name for ", opt);
 			values->input_file = file;
 		}
 		else if (strcmp(opt, "-o") == 0) { // explicitly specify operation
 			char *operation= argv[++i];
-			usage_error(i, argc, "missing parameter for -o");
+			usage_error(i, argc, "missing operation name for ", opt);
 			values->operation = operation;
 		}
 		else if (strcmp(opt, "-c") == 0) { // explicitly specify command (may later be bundled into operation
 			char *command = argv[++i];
-			usage_error(i, argc, "missing parameter for -c");
+			usage_error(i, argc, "missing command for ", opt);
 			values->command = command;
 		}
 		else if (strcmp(opt, "-tU") == 0) { // URG
@@ -68,21 +75,21 @@ void arg_eval(int argc, char *argv[], struct arg_values *values) {
 		}
 		else if (strcmp(opt, "-n") == 0) { // count, the amount of packets for interface to victimize
 			char *capture_amount = argv[++i];
-			usage_error(i, argc, "missing paramter for -n");
+			usage_error(i, argc, "missing number for ", opt);
 			values->count = atoi(capture_amount);
 		} 
 		else if (i == (argc - 1)) { // if it's the final argument and not an option, it's a bpf
 				if (*opt == '-') // if it's decorated like an option
-					usage_error(0,0,"unrecognized option");
+					usage_error(0,0,UNRECOGNIZED_OPTION, opt);
 				values->filter = opt;
 		} else if (i == (argc - 3)) { // if it's the 3rd from last argument and not an options its an operation and command
 				if (*opt == '-') // if it's decorated like an option
-					usage_error(0,0,"unrecognized option");
+					usage_error(0,0,UNRECOGNIZED_OPTION, opt);
 				values->operation = opt;
 				values->command = argv[++i];
 		}
 		else
-			usage_error(0, 0, "unrecognized option");
+			usage_error(0, 0, UNRECOGNIZED_OPTION, opt);
 	}
 }
 
@@ -107,23 +114,6 @@ void initialize(struct arg_values *values) {
 	values->count = -1;
 }
 
-void nothing(struct arg_values *values) {
-	/*
-	values->operation = "\0";
-	values->command = "\0";
-	values->filter = "\0";
-	values->interface = "\0";
-	values->input_file = "\0";
-	*/
-	values->tcp_urg = 0;	
-	values->tcp_ack = 1;	// by default ack is set
-	values->tcp_psh = 0;	
-	//values->tcp_rst = 0;	
-	values->tcp_syn = 0;	
-	values->tcp_fin = 0;	
-	values->count = 0;
-}
-
 /**
  * terminates execution and prints an error
  * to catch bad command-line arguments.
@@ -131,10 +121,10 @@ void nothing(struct arg_values *values) {
  * @param int, argument count
  * @param char *, a string with an error message
  */
-void usage_error(int pos, int argc, char *mesg) {
+void usage_error(int pos, int argc, char *mesg, char *opt) {
 	if (pos >= argc) {	
-		printf("%s\n", mesg);
-		printf("%s", USAGE);
+		fprintf(stderr, "%s %s\n", mesg, opt);
+		fprintf(stderr, "%s", USAGE);
 		exit(EXIT_FAILURE);
 	}
 }

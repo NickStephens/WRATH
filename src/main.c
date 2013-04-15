@@ -11,6 +11,7 @@ int main(int argc, char *argv[]) {
 	printf("filter: %s\n", user_values->filter);
 	printf("operation: %s\n", user_values->operation);
 	printf("command: %s\n", user_values->command);
+	printf("count: %d\n", user_values->count);
 
 	wrath_position(user_values);
 
