@@ -26,14 +26,23 @@ void wrath_position(struct arg_values *cline_args) {
 
 	printf("Watching victims on %s\n", device);	
 
-	pcap_handle = pcap_open_live(device, 4096, 1, 0, errbuf); //snaplen is small (4kb) because we only need the headers
+	/* snaplen
+	   14 bytes for ethernet header
+	   20 bytes for internet protocol header (without options)	   
+		-option possibilities
+	   20 bytes for transmission control protocol header (without options) 
+
+	   It's a possibility that while sniffing webserver traffic we may want to
+	   leave enough room to sniff HEADER information
+	*/
+	pcap_handle = pcap_open_live(device, 128, 1, 0, errbuf); //
 	if (pcap_handle == NULL)
 		pcap_perror(pcap_handle, errbuf);
 	
 	// parse/compile bpf (if filter is null, skip this step)
 	if (strcmp(cline_args->filter,"\0") != 0) { // if filter is set
 		struct bpf_program fp;
-		if((pcap_compile(pcap_handle, &fp, cline_args->filter, 0, 0)) == -1) {
+		if((pcap_compile(pcap_handle, &fp, cline_args->filter, 1, 0)) == -1) {
 			pcap_perror(pcap_handle, "ERROR compiling filter");
 			exit(1); 
 		}
@@ -43,7 +52,6 @@ void wrath_position(struct arg_values *cline_args) {
 		}
 	}
 
-	printf("now looping\n");
 	int cap_amount = -1;
 	if (cline_args->count != -1) // if count is set
 		cap_amount = cline_args->count;

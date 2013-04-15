@@ -1,4 +1,4 @@
-#include <stdlib.h>
+#include "stdlib.h"
 #include "wrath.h"
 
 int main(int argc, char *argv[]) {
@@ -6,12 +6,6 @@ int main(int argc, char *argv[]) {
 	struct arg_values *user_values;
 	user_values = (struct arg_values *) malloc(sizeof (struct arg_values));
 	arg_eval(argc, argv, user_values);	
-
-	printf("[DEBUG]\n");
-	printf("filter: %s\n", user_values->filter);
-	printf("operation: %s\n", user_values->operation);
-	printf("command: %s\n", user_values->command);
-	printf("count: %d\n", user_values->count);
 
 	wrath_position(user_values);
 
