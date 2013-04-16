@@ -1,4 +1,5 @@
 #include <pcap.h>
+#include <libnet.h>
 #include <stdlib.h>
 #include "wrath-structs.h"
 
@@ -6,7 +7,7 @@ void wrath_inject(u_char *, const struct pcap_pkthdr *, const u_char *);
 // will need to cast the pointer to u_char. (struct arg_vals *) args
 
 // places wrath in the position to capture the victims packets
-void wrath_position(struct arg_values *cline_args) {
+pcap_t *wrath_position(struct arg_values *cline_args) {
 	struct pcap_pkthdr cap_header;
 	const u_char *packet, *pkt_data;
 	char errbuf[PCAP_ERRBUF_SIZE];
@@ -17,7 +18,7 @@ void wrath_position(struct arg_values *cline_args) {
 	if (strcmp(cline_args->interface, "\0") == 0) { // if interface is not set
 		device = pcap_lookupdev(errbuf);
 		if(device == NULL) {
-			fprintf(stderr, "error fetching interface: %s %s\n", errbuf, "(this program must run as root)");
+			fprintf(stderr, "error fetching interface: %s %s\n", errbuf, "(this program must be run as root)");
 			exit(1);
 		}
 	} else { // if interface is set
@@ -51,6 +52,46 @@ void wrath_position(struct arg_values *cline_args) {
 			exit(1);
 		}
 	}
+
+	return pcap_handle;
+}
+
+void wrath_observe(struct arg_values *cline_args) {
+	struct lcp_package *chp; // contains command-line args, libnet handle (file descriptor), and packet forgery memory
+	libnet_t *libnet_handle;
+	pcap_t *pcap_handle;
+	char libnet_errbuf[LIBNET_ERRBUF_SIZE];
+	char pcap_errbuf[PCAP_ERRBUF_SIZE];
+	char *device;
+
+	/* initializing bundle */
+	chp = (struct lcp_package *) malloc(sizeof (struct lcp_package));
+	chp->cline_args = cline_args;
+
+	/* initializing sniffer, getting into position */
+	/* might be problems with the pieces of memory for 
+	structs created in position, especially errbuf and device */
+	pcap_handle = wrath_position(cline_args); 
+
+	/* grabbing device name for libnet */
+		if (strcmp(cline_args->interface, "\0") == 0) { // if interface is not set
+			device = pcap_lookupdev(pcap_errbuf);
+			if(device == NULL) {
+				fprintf(stderr, "error fetching interface: %s %s\n", pcap_errbuf, "(this program must be run as root)");
+				exit(1);
+			}
+		} else { // if interface is set
+			device = cline_args->interface;
+		}
+
+	// need to initialize environment for libent in advanced mode
+	libnet_handle = libnet_init(LIBNET_RAW4_ADV, device, libnet_errbuf);
+	if (libnet_handle == NULL)
+		fprintf(stderr, "trouble initiating libnet interface: %s \n", libnet_errbuf);
+	chp->libnet_handle = libnet_handle;
+	
+	// need to initialize memory for packet construction
+	chp->packet = (u_char *) malloc(4126); 
 
 	int cap_amount = -1;
 	if (cline_args->count != -1) // if count is set

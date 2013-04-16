@@ -1,4 +1,4 @@
-#include "stdlib.h"
+#include <stdlib.h>
 #include "wrath.h"
 
 int main(int argc, char *argv[]) {
@@ -7,7 +7,7 @@ int main(int argc, char *argv[]) {
 	user_values = (struct arg_values *) malloc(sizeof (struct arg_values));
 	arg_eval(argc, argv, user_values);	
 
-	wrath_position(user_values);
+	wrath_observe(user_values);
 
 	free(user_values);
 	/* Algorithm
