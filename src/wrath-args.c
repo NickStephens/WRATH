@@ -56,22 +56,22 @@ void arg_eval(int argc, char *argv[], struct arg_values *values) {
 			values->command = command;
 		}
 		else if (strcmp(opt, "-tU") == 0) { // URG
-			values->tcp_urg = 1;
+			values->tcp_urg = 0x20;
 		}
 		else if (strcmp(opt, "-tA") == 0) { // ACK
-			values->tcp_ack = 0;   // mark ack flag off
+			values->tcp_ack = 0x00;   // mark ack flag off
 		}
 		else if (strcmp(opt, "-tP") == 0) { // PSH
-			values->tcp_psh = 1;
+			values->tcp_psh = 0x08;
 		}
 		else if (strcmp(opt, "-tR") == 0) { // RST
-			values->tcp_rst = 1;
+			values->tcp_rst = 0x04;
 		}
 		else if (strcmp(opt, "-tS") == 0) { // SYN
-			values->tcp_syn = 1;
+			values->tcp_syn = 0x02;
 		}
 		else if (strcmp(opt, "-tF") == 0) { // FIN
-			values->tcp_fin = 1;
+			values->tcp_fin = 0x01;
 		}
 		else if (strcmp(opt, "-n") == 0) { // count, the amount of packets for interface to victimize
 			char *capture_amount = argv[++i];
@@ -105,12 +105,12 @@ void initialize(struct arg_values *values) {
 	values->filter = "\0";
 	values->interface = "\0";
 	values->input_file = "\0";
-	values->tcp_urg = 0;	
-	values->tcp_ack = 1;	// by default ack is set
-	values->tcp_psh = 0;	
-	values->tcp_rst = 0;	
-	values->tcp_syn = 0;	
-	values->tcp_fin = 0;	
+	values->tcp_urg = 0x0;	
+	values->tcp_ack = 0x0;	// by default ack is set
+	values->tcp_psh = 0x0;	
+	values->tcp_rst = 0x0;	
+	values->tcp_syn = 0x0;	
+	values->tcp_fin = 0x0;	
 	values->count = -1;
 }
 
