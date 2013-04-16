@@ -3,7 +3,7 @@
 #include "wrath-structs.h"
 
 void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_char *packet) {
-	struct arg_value *cline_args = (struct arg_value *) args;
+	struct lcp_package *package = (struct lcp_package *) args;
 
 	struct libnet_ipv4_hdr *iphdr;
 	struct libnet_tcp_hdr *tcphdr;
@@ -15,7 +15,7 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 	printf(" %s\n", inet_ntoa(iphdr->ip_dst));
 	
 	/*
-	libnet_build_ip(LIBNET_TCP_H,
+	libnet_build_adv_ipv4(LIBNET_TCP_H,
 	IPTOS_LOWDELAY,
 	libnet_get_prand(LIBNET_PRU16),
 	0,

@@ -86,18 +86,21 @@ void wrath_observe(struct arg_values *cline_args) {
 
 	// need to initialize environment for libent in advanced mode
 	libnet_handle = libnet_init(LIBNET_RAW4_ADV, device, libnet_errbuf);
-	if (libnet_handle == NULL)
+	if (libnet_handle == NULL) {
 		fprintf(stderr, "trouble initiating libnet interface: %s \n", libnet_errbuf);
+		exit(1);
+	}
 	chp->libnet_handle = libnet_handle;
 	
 	// need to initialize memory for packet construction
-	chp->packet = (u_char *) malloc(4126); 
+	chp->packet = (u_char *) malloc(4096); // 4kb for packet data (MAX: 65536...something like that)
 
 	int cap_amount = -1;
 	if (cline_args->count != -1) // if count is set
 		cap_amount = cline_args->count;
 
-	pcap_loop(pcap_handle, cap_amount, wrath_inject, (u_char *) cline_args);
-
+	pcap_loop(pcap_handle, cap_amount, wrath_inject, (u_char *) chp);
 	pcap_close(pcap_handle);
+
+	libnet_destroy(libnet_handle);
 }
