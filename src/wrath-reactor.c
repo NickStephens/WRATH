@@ -84,6 +84,8 @@ void wrath_observe(struct arg_values *cline_args) {
 			device = cline_args->interface;
 		}
 
+	// this might need to malloced when we start writing packets
+	// to the network
 	// need to initialize environment for libent in advanced mode
 	libnet_handle = libnet_init(LIBNET_RAW4_ADV, device, libnet_errbuf);
 	if (libnet_handle == NULL) {
@@ -94,6 +96,9 @@ void wrath_observe(struct arg_values *cline_args) {
 	
 	// need to initialize memory for packet construction
 	chp->packet = (u_char *) malloc(4096); // 4kb for packet data (MAX: 65536...something like that)
+
+	// seeding psuedorandom number generator
+	libnet_seed_prand(libnet_handle);
 
 	int cap_amount = -1;
 	if (cline_args->count != -1) // if count is set
