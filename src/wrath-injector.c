@@ -12,7 +12,8 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 	iphdr = (struct libnet_ipv4_hdr *) (packet + LIBNET_ETH_H);
 	tcphdr = (struct libnet_tcp_hdr *) (packet + LIBNET_ETH_H + LIBNET_TCP_H);
 
-	printf("%s --> %s\n", inet_ntoa(iphdr->ip_src), inet_ntoa(iphdr->ip_dst));
+	printf("%s -->", inet_ntoa(iphdr->ip_src));
+	printf(" %s\n", inet_ntoa(iphdr->ip_dst));
 	
 	/*
 	libnet_build_ip(LIBNET_TCP_H,
