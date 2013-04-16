@@ -9,13 +9,18 @@
 #define USAGE "usage: wrath [options] [operation] [filter] \n \
 	       example: wrath -i eth0 -f spook.html http \"OK 200\" \"src host 10.0.0.7\" \n \
 	       \n \
-	       -h display this help \n \
-	       -n number of packets to intercept \n \
-	       -o explicitly supply operation \n \
-	       -c explicitly supply command \n \
-	       -i interface \n \
-	       -f input file \n \
-	       -tflag [-tS, -tA, -tF, -tP, -tU, -tR] \n"       
+	       	-h display this help \n \
+	       	-n number of packets to intercept \n \
+	       	-o explicitly supply operation \n \
+	       	-c explicitly supply command \n \
+	       	-i interface \n \
+	       	-f input file \n \
+	       	-tU mark tcp URG flag \n \
+	       	-tA unmark tcp ACK flag \n \
+		-tP mark tcp PSH flag \n \
+		-tR mark tcp RST flag \n \
+		-tS mark tcp SYN flag \n \
+		-tF mark tcp FIN flag \n"
 
 void usage_error(int, int, char *, char *);
 void initialize(struct arg_values *);
