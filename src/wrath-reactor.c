@@ -17,7 +17,7 @@ void wrath_position(struct arg_values *cline_args) {
 	if (strcmp(cline_args->interface, "\0") == 0) { // if interface is not set
 		device = pcap_lookupdev(errbuf);
 		if(device == NULL) {
-			fprintf(stderr, "ERROR FETCHING INTERFACE: %s %s\n", errbuf, "(are you root?)");
+			fprintf(stderr, "error fetching interface: %s %s\n", errbuf, "(this program must run as root)");
 			exit(1);
 		}
 	} else { // if interface is set

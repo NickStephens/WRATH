@@ -9,6 +9,7 @@ int main(int argc, char *argv[]) {
 
 	wrath_position(user_values);
 
+	free(user_values);
 	/* Algorithm
 		first sniff a packet that matches the berkeley packet filter syntax (the expression will be delivered via wrath-argj)
 		NOTE: The packet's origin address is the address representing who will recieve our spoofed information. The packet's 
