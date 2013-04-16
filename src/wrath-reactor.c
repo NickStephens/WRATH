@@ -103,4 +103,5 @@ void wrath_observe(struct arg_values *cline_args) {
 	pcap_close(pcap_handle);
 
 	libnet_destroy(libnet_handle);
+	free(chp);
 }
