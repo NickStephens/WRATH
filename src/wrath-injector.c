@@ -19,6 +19,8 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 	/* build application layer -- this order is only a libnet requirement, so maybe not */
 
 	/* libnet_build_tcp */
+	/* libnet_build_tcp(LIBNET_TCP_H, */
+	
 	
 	libnet_build_ipv4(LIBNET_TCP_H, // length
 	IPTOS_LOWDELAY,			// type of service
