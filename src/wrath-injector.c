@@ -13,14 +13,16 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 	iphdr = (struct libnet_ipv4_hdr *) (packet + LIBNET_ETH_H);
 	tcphdr = (struct libnet_tcp_hdr *) (packet + LIBNET_ETH_H + LIBNET_TCP_H);
 
-	printf("%s -->", inet_ntoa(iphdr->ip_src)); // ip_src and ip_dst are in_addr structs
-	printf(" %s\n", inet_ntoa(iphdr->ip_dst));
+	printf("%s:%hu -->", inet_ntoa(iphdr->ip_src), ntohs(tcphdr->th_sport)); // ip_src and ip_dst are in_addr structs
+	printf(" %s:%hu\n", inet_ntoa(iphdr->ip_dst), ntohs(tcphdr->th_dport));
 
 	/* build application layer -- this order is only a libnet requirement, so maybe not */
 
 	/* libnet_build_tcp */
-	/* libnet_build_tcp(LIBNET_TCP_H, */
-	
+	/*
+	libnet_build_tcp(LIBNET_TCP_H,
+	tcphdr->sport;
+	*/	
 	
 	libnet_build_ipv4(LIBNET_TCP_H, // length
 	IPTOS_LOWDELAY,			// type of service
@@ -36,7 +38,5 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 	libnet_handle,			// pointer libnet context
 	0);				// ptag: 0 = build a new header	
 
-	printf("shooting off dummy response packet\n");
-	libnet_write(libnet_handle);
-	printf("shot\n");
+//	libnet_write(libnet_handle);
 }

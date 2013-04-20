@@ -107,6 +107,13 @@ void wrath_observe(struct arg_values *cline_args) {
 	pcap_loop(pcap_handle, cap_amount, wrath_inject, (u_char *) chp);
 	pcap_close(pcap_handle);
 
+	// getting statistical information
+	struct libnet_stats l_stats;
+
+	libnet_stats(libnet_handle, &l_stats);
+	printf("Wrath Stats: \n");
+	printf("Packets Injected: %d\n", l_stats.packets_sent);
+
 	libnet_destroy(libnet_handle);
 	free(chp);
 }
