@@ -22,5 +22,4 @@ struct arg_values {
 struct lcp_package {
 	libnet_t *libnet_handle; // libnet context
 	struct arg_values *cline_args; // command-line arguments
-	u_char *packet;	// packet forgery memory
 };

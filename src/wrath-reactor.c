@@ -106,9 +106,6 @@ void wrath_observe(struct arg_values *cline_args) {
 	}
 	chp->libnet_handle = libnet_handle;
 	
-	// need to initialize memory for packet construction
-	chp->packet = (u_char *) malloc(4096); // 4kb for packet data (MAX: 65536...something like that)
-
 	// seeding psuedorandom number generator
 	libnet_seed_prand(libnet_handle);
 
