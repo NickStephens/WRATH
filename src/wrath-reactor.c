@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include "wrath-structs.h"
 
+#define ACK_PACKETS "tcp[tcpflags] & tcp-ack != 0"
+#define ACK_PACKETS_EXT "tcp[tcpflags] & tcp-ack != 0 and %s"
+
 void wrath_inject(u_char *, const struct pcap_pkthdr *, const u_char *);
 // will need to cast the pointer to u_char. (struct arg_vals *) args
 
@@ -41,16 +44,24 @@ pcap_t *wrath_position(struct arg_values *cline_args) {
 		pcap_perror(pcap_handle, errbuf);
 	
 	// parse/compile bpf (if filter is null, skip this step)
+	struct bpf_program fp;
+		
+	char *filter_str;
 	if (strcmp(cline_args->filter,"\0") != 0) { // if filter is set
-		struct bpf_program fp;
-		if((pcap_compile(pcap_handle, &fp, cline_args->filter, 1, 0)) == -1) {
-			pcap_perror(pcap_handle, "ERROR compiling filter");
-			exit(1); 
-		}
-		if(pcap_setfilter(pcap_handle, &fp) == -1) {
-			pcap_perror(pcap_handle, "ERROR setting filter");
-			exit(1);
-		}
+		filter_str  = (char * ) malloc(sizeof ACK_PACKETS_EXT + sizeof cline_args->filter);
+		sprintf(filter_str, ACK_PACKETS_EXT, cline_args->filter);
+	} else {
+		filter_str = ACK_PACKETS;
+	}
+	printf("Victim filter: %s\n", filter_str);
+
+	if ((pcap_compile(pcap_handle, &fp, filter_str, 1, 0)) == -1) {
+		pcap_perror(pcap_handle, "ERROR compiling filter");
+		exit(1); 
+	}
+	if (pcap_setfilter(pcap_handle, &fp) == -1) {
+		pcap_perror(pcap_handle, "ERROR setting filter");
+		exit(1);
 	}
 
 	return pcap_handle;
