@@ -22,10 +22,10 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 
 	/* libnet_build_tcp */
 	libnet_build_tcp(
-	tcphdr->th_sport,		// source port
-	tcphdr->th_dport,		// destination port
-	tcphdr->th_ack,			// +(calc_len(upper_level)),	// seq (pretend to be next packet)
-	tcphdr->th_seq,			// ack
+	ntohs(tcphdr->th_dport),	// source port (preted to be from destination port)
+	ntohs(tcphdr->th_sport),	// destination port (pretend to be from source port)
+	ntohl(tcphdr->th_ack),		// +(calc_len(upper_level)),	// seq (pretend to be next packet)
+	ntohl(tcphdr->th_seq),		// ack
 	(cline_args->tcp_rst
 	+ cline_args->tcp_fin
 	+ cline_args->tcp_syn
@@ -33,7 +33,7 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 	+ cline_args->tcp_urg
 	+ cline_args->tcp_psh),		// flags	
 	4096,				// window size -- the higher this is the least likely fragmentation will occur
-	0,				// checksum: 0 = libmet auto-fill
+	0,				// checksum: 0 = libnet auto-fill
 	0,				// URG pointer	
 	0,				// len
 	NULL,				// *payload (maybe app-level here)
@@ -57,5 +57,5 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 
 	libnet_write(libnet_handle);
 
-	usleep(5000);			// jump out of the storm (consider making this value a user configurable)
+	//usleep(5000);			// jump out of the storm (consider making this value a user configurable)
 }
