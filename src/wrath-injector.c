@@ -16,6 +16,8 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 	printf("%s:%hu -->", inet_ntoa(iphdr->ip_src), ntohs(tcphdr->th_sport)); // ip_src and ip_dst are in_addr structs
 	printf(" %s:%hu\n", inet_ntoa(iphdr->ip_dst), ntohs(tcphdr->th_dport));
 
+	printf("TCP SUM: %d\n", (cline_args->tcp_fin + cline_args->tcp_rst + cline_args->tcp_syn + cline_args->tcp_ack + cline_args->tcp_urg + cline_args->tcp_psh));
+	
 	/* build application layer -- this order is only a libnet requirement, so maybe not */
 
 	/* libnet_build_tcp */

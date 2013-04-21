@@ -110,12 +110,12 @@ void initialize(struct arg_values *values) {
 	values->filter = "\0";
 	values->interface = "\0";
 	values->input_file = "\0";
-	values->tcp_urg = 0x0;	
-	values->tcp_ack = 0x0;	// by default ack is set
-	values->tcp_psh = 0x0;	
-	values->tcp_rst = 0x0;	
-	values->tcp_syn = 0x0;	
-	values->tcp_fin = 0x0;	
+	values->tcp_urg = 0x00;	
+	values->tcp_ack = 0x10;	// by default ack is set
+	values->tcp_psh = 0x00;	
+	values->tcp_rst = 0x00;	
+	values->tcp_syn = 0x00;	
+	values->tcp_fin = 0x00;	
 	values->count = -1;
 }
 
