@@ -47,7 +47,7 @@ pcap_t *wrath_position(struct arg_values *cline_args) {
 	struct bpf_program fp;
 		
 	char *filter_str;
-	filter_str  = (char * ) malloc(sizeof ACK_PACKETS_EXT + sizeof cline_args->filter);
+	filter_str  = (char * ) malloc(sizeof ACK_PACKETS_EXT + strlen(cline_args->filter));
 	if (strcmp(cline_args->filter,"\0") != 0) { // if filter is set
 		sprintf(filter_str, ACK_PACKETS_EXT, cline_args->filter);
 	} else {

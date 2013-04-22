@@ -64,7 +64,7 @@ void arg_eval(int argc, char *argv[], struct arg_values *values) {
 			values->tcp_urg = 0x20;
 		}
 		else if (strcmp(opt, "-tA") == 0) { // ACK
-			values->tcp_ack = 0x00;   // mark ack flag off
+			values->tcp_ack = 0x10;   // mark ack flag off
 		}
 		else if (strcmp(opt, "-tP") == 0) { // PSH
 			values->tcp_psh = 0x08;
@@ -111,7 +111,7 @@ void initialize(struct arg_values *values) {
 	values->interface = "\0";
 	values->input_file = "\0";
 	values->tcp_urg = 0x00;	
-	values->tcp_ack = 0x10;	// by default ack is set
+	values->tcp_ack = 0x00;
 	values->tcp_psh = 0x00;	
 	values->tcp_rst = 0x00;	
 	values->tcp_syn = 0x00;	

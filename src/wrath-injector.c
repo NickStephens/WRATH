@@ -56,4 +56,6 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 	0);				// ptag: 0 = build a new header	
 
 	libnet_write(libnet_handle);
+
+	usleep(5000);			// jump out of the storm (consider making this value a user configurable)
 }
