@@ -9,18 +9,18 @@
 #define USAGE "usage: wrath [options] [operation] [filter] \n \
 	       example: wrath -i eth0 -f spook.html http \"OK 200\" \"src host 10.0.0.7\" \n \
 	       \n \
-	       	-h display this help \n \
-	       	-n number of packets to intercept \n \
-	       	-o explicitly supply operation \n \
-	       	-c explicitly supply command \n \
-	       	-i interface \n \
-	       	-f input file \n \
-	       	-tU mark tcp URG flag \n \
-	       	-tA unmark tcp ACK flag \n \
-		-tP mark tcp PSH flag \n \
-		-tR mark tcp RST flag \n \
-		-tS mark tcp SYN flag \n \
-		-tF mark tcp FIN flag \n"
+	       	-h 	display this help \n \
+	       	-n	number of packets to intercept \n \
+	       	-o	explicitly supply operation \n \
+	       	-c 	explicitly supply command \n \
+	       	-i 	interface \n \
+	       	-f 	input file \n \
+	       	-tU 	mark tcp URG flag \n \
+	       	-tA 	unmark tcp ACK flag \n \
+		-tP 	mark tcp PSH flag \n \
+		-tR 	mark tcp RST flag \n \
+		-tS 	mark tcp SYN flag \n \
+		-tF 	mark tcp FIN flag \n"
 
 void usage_error(int, int, char *, char *);
 void initialize(struct arg_values *);
@@ -78,7 +78,9 @@ void arg_eval(int argc, char *argv[], struct arg_values *values) {
 		else if (strcmp(opt, "-tF") == 0) { // FIN
 			values->tcp_fin = 0x01;
 		}
-		else if (strcmp(opt, "-n") == 0) { // count, the amount of packets for interface to victimize
+		else if (strcmp(opt, "-h") == 0) { // Usage Information
+			usage_error(0,0,"","");
+		} else if (strcmp(opt, "-n") == 0) { // count, the amount of packets for interface to victimize
 			char *capture_amount = argv[++i];
 			usage_error(i, argc, "missing number for ", opt);
 			values->count = atoi(capture_amount);
