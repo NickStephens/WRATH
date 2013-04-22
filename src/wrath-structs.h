@@ -16,10 +16,17 @@ struct arg_values {
 	char *command; // application-level command
 	char *filter; // bpf
 	int count; // how many packets to victimize
+	int sleep_time; // amount of millisecond to wait in between packet injection
 };
 
 /* structure for packaging useful information */
 struct lcp_package {
 	libnet_t *libnet_handle; // libnet context
 	struct arg_values *cline_args; // command-line arguments
+};
+
+/* injection information */
+struct inject_package {
+	const unsigned char *stream; // stream of bytes representing inject data
+	int length; // length of the stream (used for libnet packet crafting in TCP header)
 };

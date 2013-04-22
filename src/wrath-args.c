@@ -20,7 +20,8 @@
 		-tP 	mark tcp PSH flag \n \
 		-tR 	mark tcp RST flag \n \
 		-tS 	mark tcp SYN flag \n \
-		-tF 	mark tcp FIN flag \n"
+		-tF 	mark tcp FIN flag \n\
+		-s	set sleep time (in millisecond) between packet injections"
 
 void usage_error(int, int, char *, char *);
 void initialize(struct arg_values *);
@@ -80,7 +81,12 @@ void arg_eval(int argc, char *argv[], struct arg_values *values) {
 		}
 		else if (strcmp(opt, "-h") == 0) { // Usage Information
 			usage_error(0,0,"","");
-		} else if (strcmp(opt, "-n") == 0) { // count, the amount of packets for interface to victimize
+		} else if (strcmp(opt, "-s") == 0) { // sleep time 
+			char *sleep_time;
+			usage_error(i, argc, "missing time for ", opt);
+			values->sleep_time = atoi(argv[++i]);
+		}	
+		else if (strcmp(opt, "-n") == 0) { // count, the amount of packets for interface to victimize
 			char *capture_amount = argv[++i];
 			usage_error(i, argc, "missing number for ", opt);
 			values->count = atoi(capture_amount);
@@ -119,6 +125,7 @@ void initialize(struct arg_values *values) {
 	values->tcp_syn = 0x00;	
 	values->tcp_fin = 0x00;	
 	values->count = -1;
+	values->sleep_time = -1;
 }
 
 /**
