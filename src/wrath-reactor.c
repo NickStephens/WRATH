@@ -51,7 +51,7 @@ pcap_t *wrath_position(struct arg_values *cline_args) {
 	if (strcmp(cline_args->filter,"\0") != 0) { // if filter is set
 		sprintf(filter_str, ACK_PACKETS_EXT, cline_args->filter);
 	} else {
-		filter_str = ACK_PACKETS;
+		sprintf(filter_str, ACK_PACKETS);
 	}
 	printf("Victim filter: %s\n", filter_str);
 
