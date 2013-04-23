@@ -2,6 +2,7 @@
 #include <pcap.h>
 #include "wrath-structs.h"
 #include "wrath-utils.h"
+#include "wrath-applevel.h"
 
 void wrath_build(u_char *, const u_char *, struct inject_package);
 
@@ -62,6 +63,8 @@ void wrath_build(u_char *args, const u_char *packet, struct inject_package i_pac
 	printf(" %s:%hu\n", inet_ntoa(iphdr->ip_dst), ntohs(tcphdr->th_dport));
 
 	printf("TCP SUM: %d\n", (cline_args->tcp_fin + cline_args->tcp_rst + cline_args->tcp_syn + cline_args->tcp_ack + cline_args->tcp_urg + cline_args->tcp_psh));
+
+	char payload[] = "HTTP/1.1 200 OK \r\nServer:WRATH\r\n\r\n<html><head>spoofed</head></html>";
 	
 	/* libnet_build_tcp */
 	libnet_build_tcp(
@@ -79,8 +82,8 @@ void wrath_build(u_char *args, const u_char *packet, struct inject_package i_pac
 	0,				// checksum: 0 = libnet auto-fill
 	0,				// URG pointer	
 	0,				// len
-	i_pack.stream,			// *payload (maybe app-level here)
-	i_pack.len,			// payload length
+	(u_int8_t *)payload,			// *payload (maybe app-level here)
+	sizeof(payload),			// payload length
 	libnet_handle,			// pointer libnet context	
 	0);				// ptag: 0 = build a new header
 	

@@ -5,9 +5,13 @@ x Write a way to specify on the command line which TCP flags to set.
 x Write a module to treat command-line arguments as key-value pairs
 x Build injector/reacter which fires off forged packets created by the crafter as a reaction to network activity
 x Build underlying IP/TCP packet crafter (needs to account for the command-line args!)
-* Write a suite of tools that parses and writes HTTP commands at the packet level
 * Improve argument handler to use getopt and case statement
 * Move universal objects, like handlers, and data bundles to heap:
 	- libnet_handler
 	- pcap_handler
 	- cline_args
+	- inject_package
+* Write a suite of tools that parses and writes HTTP commands at the packet level
+	x file inclusion
+	- convert header and resource files to network byte order	
+	
