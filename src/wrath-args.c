@@ -21,7 +21,7 @@
 		-tR 	mark tcp RST flag \n \
 		-tS 	mark tcp SYN flag \n \
 		-tF 	mark tcp FIN flag \n\
-		-s	set sleep time (in millisecond) between packet injections"
+		-s	set sleep time (in millisecond) between packet injections\n"
 
 void usage_error(int, int, char *, char *);
 void initialize(struct arg_values *);

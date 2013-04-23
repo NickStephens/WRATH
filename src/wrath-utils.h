@@ -1,5 +1,7 @@
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /* many of these functions are heavily influenced by Jon Erickson's design in his
    book "Hacking: The Art of Exploitation" */
@@ -26,4 +28,34 @@ int file_size(int fd) {
 	if (fstat(fd, &sts) == -1)
 		return -1;
 	return (int) sts.st_size;	
+}
+
+void shiftl(char *str) {
+	char *temp;
+	while (*str != '\0') {
+		temp = str;
+		str++;	
+		*temp = *str;
+	}
+}
+
+/* encodes \n and \r to their correct hexadecial values 
+ * within a string */
+char *wrath_char_encode(char *str) {
+	char *top;
+	char *new_str = (char *) malloc(strlen(str));
+	new_str = strcpy(new_str, str);
+	top = new_str;	
+	while (*new_str != '\0') {
+		if (*new_str == '\\') {
+			--new_str;
+			if (*(++new_str) == 'n')
+				*new_str = (char) 0x0a;
+			if (*(++new_str) == 'r')
+				*new_str = (char) 0x0d;
+			shiftl(++new_str);
+		}
+		new_str++;
+	}
+	return (new_str = top);
 }
