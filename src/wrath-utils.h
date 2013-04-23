@@ -40,10 +40,11 @@ void shiftl(char *str) {
 }
 
 /* encodes \n and \r to their correct hexadecial values 
- * within a string */
-char *wrath_char_encode(char *str) {
+ * within a string 
+ * @param the string to convert
+ * @param the string to place the conversions into */
+char *wrath_char_encode(char *str, char *new_str) {
 	char *top;
-	char *new_str = (char *) malloc(strlen(str));
 	new_str = strcpy(new_str, str);
 	top = new_str;	
 	while (*new_str != '\0') {
