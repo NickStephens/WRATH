@@ -1,0 +1,11 @@
+HTTP/1.1 200 OK\r
+Server: WRATH\r
+\r
+<html>
+	<head>
+		<title> Takenover </title>
+	</head>
+	<body>
+		This connection has been takenover.	
+	</body>
+</html>

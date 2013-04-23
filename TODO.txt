@@ -14,4 +14,6 @@ x Build underlying IP/TCP packet crafter (needs to account for the command-line 
 * Write a suite of tools that parses and writes HTTP commands at the packet level
 	x file inclusion
 	- convert header and resource files to network byte order	
+	- need to to some length arithmetic to truly inject legitamate
+	looking packets into the network.
 	
