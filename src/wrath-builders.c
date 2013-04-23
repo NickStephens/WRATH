@@ -96,7 +96,7 @@ void wrath_tcp_belly_build_and_launch(u_char *args, const u_char *packet, unsign
 	printf(" %s:%hu\n", inet_ntoa(iphdr->ip_src), ntohs(tcphdr->th_sport));
 	printf("Payload: %s\n", payload);
 
-	printf("TCP SUM: %d\n", (cline_args->tcp_fin + cline_args->tcp_rst + cline_args->tcp_syn + cline_args->tcp_ack + cline_args->tcp_urg + cline_args->tcp_psh));
+	printf("TCP SUM: %d\n", tcp_sum);
 
 	
 	/* libnet_build_tcp */
@@ -105,7 +105,7 @@ void wrath_tcp_belly_build_and_launch(u_char *args, const u_char *packet, unsign
 	ntohs(tcphdr->th_sport),	// destination port (pretend to be from source port)
 	ntohl(tcphdr->th_ack + sizeof(payload)),		// +(calc_len(upper_level)),	// seq (pretend to be next packet)
 	ntohl(tcphdr->th_seq),		// ack
-	tcp_sum,
+	tcp_sum,			// flags
 	4096,				// window size -- the higher this is the least likely fragmentation will occur
 	0,				// checksum: 0 = libnet auto-fill
 	0,				// URG pointer	
