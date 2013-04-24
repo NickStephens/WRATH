@@ -131,9 +131,4 @@ void wrath_tcp_belly_build_and_launch(u_char *args, const u_char *packet, unsign
 	0);				// ptag: 0 = build a new header	
 
 	libnet_write(libnet_handle);
-	
-	if (cline_args->sleep_time = -1) 	
-		usleep(5000);		// jump out of the storm 
-	else 
-		usleep(cline_args->sleep_time);
 }

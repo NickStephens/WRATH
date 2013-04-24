@@ -56,7 +56,7 @@ void arg_eval(int argc, char *argv[], struct arg_values *values) {
 			usage_error(i, argc, "missing operation name for ", opt);
 			values->operation = operation;
 		}
-		else if (strcmp(opt, "-c") == 0) { // explicitly specify command (may later be bundled into operation
+		else if (strcmp(opt, "-c") == 0) { // explicitly specify command 
 			char *command = argv[++i];
 			usage_error(i, argc, "missing command for ", opt);
 			values->command = command;
