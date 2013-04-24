@@ -4,24 +4,28 @@
 /* builds a raw tcp packet
  * @param an argument bundle
  * @param the packet captured */
-void wrath_capture_stats(u_char *packet) {
+void wrath_capture_stats(const u_char *packet) {
 	struct libnet_ipv4_hdr *iphdr;
 	struct libnet_tcp_hdr *tcphdr;	
 
 	iphdr = (struct libnet_ipv4_hdr *) (packet + LIBNET_ETH_H);
 	tcphdr = (struct libnet_tcp_hdr *) (packet + LIBNET_ETH_H + LIBNET_TCP_H);
 
-	short int *total_length = (short int *) (packet + LIBNET_ETH_H + 2);
+	short int *total_length = (short int *) (packet + LIBNET_ETH_H + 2); // grabbing packet total length from IP header
 	short int length = ntohs(*total_length);
-	u_char *app_data_begin = ((packet + LIBNET_ETH_H + LIBNET_TCP_H) + (*(packet + LIBNET_ETH_H + LIBNET_TCP_H + 12))); 
-	strcat(app_data_begin, "\0");
+	u_char tcp_header_length = (tcphdr->th_off) * 4; // tcp header length
+	int core_header_length = LIBNET_ETH_H + LIBNET_TCP_H + tcp_header_length; 
+	int data_length = length - (LIBNET_ETH_H + LIBNET_TCP_H + core_header_length);
 
 	printf("%s:%hu -->", inet_ntoa(iphdr->ip_src), ntohs(tcphdr->th_sport)); // ip_src and ip_dst are in_addr structs
 	printf(" %s:%hu\n", inet_ntoa(iphdr->ip_dst), ntohs(tcphdr->th_dport));
 	printf("Seq: %u ", ntohl(tcphdr->th_seq));
 	printf("Ack: %u\n", ntohl(tcphdr->th_ack));
 	printf("Control: %hu\n", ntohs(tcphdr->th_flags));
-	printf("Length %hu\n\n", length);
+	printf("Total Length: %d\n", length);
+	printf("TCP Header Length: %d\n", tcp_header_length);
+	printf("Core Header Length: %d\n", core_header_length);
+	printf("%d bytes of data\n\n", data_length);
 }
 
 void wrath_attack_packet_stats(const u_char *packet, int seq_increment, int ack_increment, int tcp_sum, int payload_size) {
