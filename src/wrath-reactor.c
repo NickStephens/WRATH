@@ -39,7 +39,7 @@ pcap_t *wrath_position(struct arg_values *cline_args) {
 	   It's a possibility that while sniffing webserver traffic we may want to
 	   leave enough room to sniff HEADER information
 	*/
-	pcap_handle = pcap_open_live(device, 128, 1, 0, errbuf); //
+	pcap_handle = pcap_open_live(device, 4026, 1, 0, errbuf); //
 	if (pcap_handle == NULL)
 		pcap_perror(pcap_handle, errbuf);
 	

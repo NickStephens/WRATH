@@ -4,6 +4,42 @@
 /* builds a raw tcp packet
  * @param an argument bundle
  * @param the packet captured */
+void wrath_capture_stats(u_char *packet) {
+	struct libnet_ipv4_hdr *iphdr;
+	struct libnet_tcp_hdr *tcphdr;	
+
+	iphdr = (struct libnet_ipv4_hdr *) (packet + LIBNET_ETH_H);
+	tcphdr = (struct libnet_tcp_hdr *) (packet + LIBNET_ETH_H + LIBNET_TCP_H);
+
+	short int *total_length = (short int *) (packet + LIBNET_ETH_H + 2);
+	short int length = ntohs(*total_length);
+	u_char *app_data_begin = ((packet + LIBNET_ETH_H + LIBNET_TCP_H) + (*(packet + LIBNET_ETH_H + LIBNET_TCP_H + 12))); 
+	strcat(app_data_begin, "\0");
+
+	printf("%s:%hu -->", inet_ntoa(iphdr->ip_src), ntohs(tcphdr->th_sport)); // ip_src and ip_dst are in_addr structs
+	printf(" %s:%hu\n", inet_ntoa(iphdr->ip_dst), ntohs(tcphdr->th_dport));
+	printf("Seq: %u ", ntohl(tcphdr->th_seq));
+	printf("Ack: %u\n", ntohl(tcphdr->th_ack));
+	printf("Control: %hu\n", ntohs(tcphdr->th_flags));
+	printf("Length %hu\n\n", length);
+}
+
+void wrath_attack_packet_stats(const u_char *packet, int seq_increment, int ack_increment, int tcp_sum, int payload_size) {
+	struct libnet_ipv4_hdr *iphdr;
+	struct libnet_tcp_hdr *tcphdr;	
+
+	iphdr = (struct libnet_ipv4_hdr *) (packet + LIBNET_ETH_H);
+	tcphdr = (struct libnet_tcp_hdr *) (packet + LIBNET_ETH_H + LIBNET_TCP_H);
+
+	printf("%s:%hu -->", inet_ntoa(iphdr->ip_dst), ntohs(tcphdr->th_dport)); // ip_src and ip_dst are in_addr structs
+	printf(" %s:%hu\n", inet_ntoa(iphdr->ip_src), ntohs(tcphdr->th_sport));
+	printf("Seq: %u ", ntohl(tcphdr->th_ack) + seq_increment);
+	printf("Ack: %u\n", ntohl(tcphdr->th_seq) + ack_increment);
+	printf("Control: %hu\n", tcp_sum);
+	printf("%d bytes of data\n\n", payload_size);
+	printf("---------------------\n");
+}
+
 void wrath_tcp_raw_build_and_launch(u_char *args, const u_char *packet) {
 	struct lcp_package *package = (struct lcp_package *) args;
 	libnet_t *libnet_handle = package->libnet_handle;
@@ -15,14 +51,12 @@ void wrath_tcp_raw_build_and_launch(u_char *args, const u_char *packet) {
 	iphdr = (struct libnet_ipv4_hdr *) (packet + LIBNET_ETH_H);
 	tcphdr = (struct libnet_tcp_hdr *) (packet + LIBNET_ETH_H + LIBNET_TCP_H);
 
-	printf("Hijacking ... ");
-	printf("%s:%hu -->", inet_ntoa(iphdr->ip_src), ntohs(tcphdr->th_sport)); // ip_src and ip_dst are in_addr structs
-	printf(" %s:%hu\n", inet_ntoa(iphdr->ip_dst), ntohs(tcphdr->th_dport));
-	printf("With ... ");
-	printf("%s:%hu -->", inet_ntoa(iphdr->ip_dst), ntohs(tcphdr->th_dport)); // ip_src and ip_dst are in_addr structs
-	printf(" %s:%hu\n", inet_ntoa(iphdr->ip_src), ntohs(tcphdr->th_sport));
-	printf("TCP SUM: %d\n", (cline_args->tcp_fin + cline_args->tcp_rst + cline_args->tcp_syn + cline_args->tcp_ack + cline_args->tcp_urg + cline_args->tcp_psh));
+	int tcp_sum = cline_args->tcp_syn + cline_args->tcp_fin + cline_args->tcp_ack + cline_args->tcp_psh + cline_args->tcp_urg + cline_args->tcp_rst;	
 
+	printf("Hijacking ... ");
+	wrath_capture_stats(packet);
+	printf("With ... ");
+	wrath_attack_packet_stats(packet, 0, 0, tcp_sum, 0);
 	
 	/* libnet_build_tcp */
 	libnet_build_tcp(
@@ -89,17 +123,9 @@ void wrath_tcp_belly_build_and_launch(u_char *args, const u_char *packet, unsign
 	tcphdr = (struct libnet_tcp_hdr *) (packet + LIBNET_ETH_H + LIBNET_TCP_H);
 
 	printf("Hijacking ... ");
-	printf("%s:%hu -->", inet_ntoa(iphdr->ip_src), ntohs(tcphdr->th_sport)); // ip_src and ip_dst are in_addr structs
-	printf(" %s:%hu\n", inet_ntoa(iphdr->ip_dst), ntohs(tcphdr->th_dport));
-	// Considier putting in upper level information about the captured packet here
+	wrath_capture_stats(packet);
 	printf("With ... ");
-	printf("%s:%hu -->", inet_ntoa(iphdr->ip_dst), ntohs(tcphdr->th_dport)); // ip_src and ip_dst are in_addr structs
-	printf(" %s:%hu\n", inet_ntoa(iphdr->ip_src), ntohs(tcphdr->th_sport));
-	printf("Payload Size: %d\n", sizeof(payload));
-	printf("Payload: %s\n", payload);
-
-	printf("TCP SUM: %d\n", tcp_sum);
-
+	wrath_attack_packet_stats(packet, 0, ack_increment, tcp_sum, sizeof(payload));
 	
 	/* libnet_build_tcp */
 	libnet_build_tcp(
