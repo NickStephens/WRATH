@@ -12,16 +12,16 @@ void wrath_capture_stats(const u_char *packet) {
 	tcphdr = (struct libnet_tcp_hdr *) (packet + LIBNET_ETH_H + LIBNET_TCP_H);
 
 	short int *total_length = (short int *) (packet + LIBNET_ETH_H + 2); // grabbing packet total length from IP header
-	short int length = ntohs(*total_length);
+	short int length = LIBNET_ETH_H + ntohs(*total_length);
 	u_char tcp_header_length = (tcphdr->th_off) * 4; // tcp header length
 	int core_header_length = LIBNET_ETH_H + LIBNET_TCP_H + tcp_header_length; 
-	int data_length = length - (LIBNET_ETH_H + LIBNET_TCP_H + core_header_length);
+	int data_length = length - core_header_length;
 
 	printf("%s:%hu -->", inet_ntoa(iphdr->ip_src), ntohs(tcphdr->th_sport)); // ip_src and ip_dst are in_addr structs
 	printf(" %s:%hu\n", inet_ntoa(iphdr->ip_dst), ntohs(tcphdr->th_dport));
 	printf("Seq: %u ", ntohl(tcphdr->th_seq));
 	printf("Ack: %u\n", ntohl(tcphdr->th_ack));
-	printf("Control: %hu\n", ntohs(tcphdr->th_flags));
+	printf("Control: 0x%04x\n", ntohs(tcphdr->th_flags));
 	printf("Total Length: %d\n", length);
 	printf("TCP Header Length: %d\n", tcp_header_length);
 	printf("Core Header Length: %d\n", core_header_length);
