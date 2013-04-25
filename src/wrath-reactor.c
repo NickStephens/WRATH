@@ -125,9 +125,8 @@ void wrath_observe(struct arg_values *cline_args) {
 	if (strcmp(app_cmd, "\0") != 0) { // if a payload was found
 		wrath_char_encode(app_cmd, app_cmd_con);
 		free(app_cmd);	
-		chp->payload = app_cmd_con;
-	} else
-		chp->payload = NULL;
+	}		
+	chp->payload = app_cmd_con;
 	
 	// seeding psuedorandom number generator
 	libnet_seed_prand(libnet_handle);
