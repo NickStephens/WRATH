@@ -41,11 +41,12 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 	 * when operations are set packets are only launched in 
 	 * response to packets which share their operations 
 	 * protocol */
+	struct packet_sizes pk_size;
+	wrath_calculate_sizes(packet, &pk_size);
+
 	char *op = cline_args->operation;
 	if (strcmp(op, "http") == 0 || strcmp(op, "HTTP") == 0 ) { // HTTP response
-		struct packet_sizes pk_size;
-		wrath_calculate_sizes(packet, &pk_size);
-		const u_char *app_begin = packet + pk_size.app_header_len;
+		const u_char *app_begin = packet + LIBNET_ETH_H + LIBNET_TCP_H + pk_size.tcp_header_len;
 		if (strstr(app_begin, "HTTP") != NULL) {
 			printf("HTTP Packet sniffed\n");
 			wrath_tcp_belly_build_and_launch(args, packet, NULL, TH_ACK, pk_size.app_header_len, 0);
