@@ -31,3 +31,9 @@ struct inject_package {
 	const unsigned char *stream; // stream of bytes representing inject data
 	int length; // length of the stream (used for libnet packet crafting in TCP header)
 };
+
+struct packet_sizes {
+	unsigned int total_len; // the length of the entire packet
+	unsigned int tcp_header_len; // the length of the tcp header
+	unsigned int app_header_len; // the length of the application header
+};

