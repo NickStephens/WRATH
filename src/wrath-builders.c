@@ -102,10 +102,6 @@ void wrath_tcp_belly_build_and_launch(u_char *args, const u_char *packet, unsign
 	struct libnet_ipv4_hdr *iphdr;
 	struct libnet_tcp_hdr *tcphdr;
 
-	//char payload2[] = "HTTP/1.1 302 Found\r\nLocation:http://ada.evergreen.edu/~stenic05\r\n\r\n\0";
-	//char payload2[] = "HTTP/1.1 302 Found\r\nLocation:http://en.wikipedia.org/wiki/Tupac_Shakur\r\n\r\n";
-	//char payload2[] = "HTTP/1.1 200 OK\r\nServer: WRATH\r\nConnection: close\r\n\r\n<html><img src=\"http://3.bp.blogspot.com/-Lz-g9K2Mc8A/UH-YAgdMRJI/AAAAAAAALoI/45KMc_bLRFc/s1600/papa_murphys_jack-o-lantern_pizza.jpg\"/></html>\0";
-
 	iphdr = (struct libnet_ipv4_hdr *) (packet + LIBNET_ETH_H);
 	tcphdr = (struct libnet_tcp_hdr *) (packet + LIBNET_ETH_H + LIBNET_TCP_H);
 
