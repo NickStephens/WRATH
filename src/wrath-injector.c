@@ -49,8 +49,8 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 		const u_char *app_begin = packet + LIBNET_ETH_H + LIBNET_TCP_H + pk_size.tcp_header_len;
 		if (strstr(app_begin, "HTTP") != NULL) {
 			printf("HTTP Packet sniffed\n");
-			wrath_tcp_belly_build_and_launch(args, packet, NULL, TH_ACK, pk_size.app_header_len, 0);
-			wrath_tcp_belly_build_and_launch(args, packet, package->payload, (TH_ACK + TH_PUSH), pk_size.app_header_len, 0);
+			//wrath_tcp_belly_build_and_launch(args, packet, NULL, TH_ACK, pk_size.app_header_len, 0);
+			wrath_tcp_belly_build_and_launch(args, packet, package->payload, (TH_ACK + TH_PUSH), pk_size.app_header_len);
 		}
 	// else if (strcmp(op, "ftp") == 0 || strcmp(op, "FTP") == 0)
 	} else if (strcmp(op, "\0") == 0 || strcmp (op, "tcp") == 0 || strcmp(op, "TCP") == 0) // TCP is default
