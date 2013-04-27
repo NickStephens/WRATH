@@ -1,5 +1,6 @@
 HTTP/1.1 200 OK\r
 Server: WRATH\r
+Connection: close\r
 \r
 <html>
 	<head>

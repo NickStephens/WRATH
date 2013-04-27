@@ -23,8 +23,8 @@ void wrath_launch_http_response(u_char *data_pass, u_char *packet, u_char *paylo
 	ntohs(tcphdr->th_dport),	// destination port (pretend to be from source port)
 	ntohl(tcphdr->th_seq + increment), 		// seq
 	ntohl(tcphdr->th_ack),		// ack
-	TH_RST,				// flags
-	60000,				// window size
+	TH_ACK,				// flags
+	0,				// window size
 	0,				// checksum: 0 = libnet auto-fill
 	0,				// URG pointer	
 	0,				// len
