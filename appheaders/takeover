@@ -10,7 +10,7 @@ Connection: close\r
 	body
 	{ 
 	background-color: blue;
-	color: yellow;
+	color: white;
 	}	
 	</style>
 	<body> 
