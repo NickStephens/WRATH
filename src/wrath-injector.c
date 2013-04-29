@@ -50,7 +50,6 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 		if (strstr(app_begin, "HTTP") != NULL) {
 			printf("HTTP Packet sniffed\n");
 			wrath_launch_http_response(args, packet, package->payload, pk_size.app_header_len);
-			//wrath_tcp_belly_build_and_launch(args, packet, package->payload, (TH_ACK + TH_PUSH), pk_size.app_header_len);
 		}
 	// else if (strcmp(op, "ftp") == 0 || strcmp(op, "FTP") == 0)
 	} else if (strcmp(op, "\0") == 0 || strcmp (op, "tcp") == 0 || strcmp(op, "TCP") == 0) // TCP is default

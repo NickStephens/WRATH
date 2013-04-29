@@ -4,9 +4,7 @@ Connection: close\r
 \r
 <html>
 	<head>
-		<title> Takenover </title>
+	<title> Taken Over </title>
 	</head>
-	<body>
-		This connection has been takenover.	
-	</body>
+	<body> This connection has been taken over. </body>
 </html>
