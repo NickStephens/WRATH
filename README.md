@@ -1,10 +1,34 @@
 ## WRATH
 #### <i> What? Really? Another TCP Hijacker? </i>
 
-<code> wrath [options] [operation] [filter] </code>
+<code># wrath [options] [operation] [filter] </code>
 
-This project hopes to teach the programmer more about both network
-programming and common LAN-based man-in-the-middle attacks. 
+WRATH is a generic TCP hijacker capable of taking over TCP virtual circuits taking place 
+on your LAN and injecting fabricated data into the circuit.
+
+For example taking over a server's http connection to a client might look like this:
+<code># ./wrath -f appheaders/takeover -o http "src host *client* and port 80"</code>
+
+This will hijack all HTTP connections responding to the *client* and append the file 
+appheaders/takeover to the attacking packets payload. (HTTP Response hijacking actually 
+involves a few more steps, but this is the premise). If appheaders/takeover contains a 
+a valid HTTP response header and valid HTML then the HTML will render in the victim's
+browser, displaying data of your choice.
+
+A simpler DoS attack may look like this:
+<code># ./wrath -o tcp -tR "src host *client*" </code>
+
+This command hijacks all connections originating from *client* and marks the TCP RST flag, 
+effectively telling the client that all server's are denying it's connection.
+
+The above examples have one problem: they only target a single victim on the LAN.
+
+This can easily change, because WRATH uses Berkely Packet Filter syntax to affect which packets
+are captured, we can easily modify the attacks to affect an entire network.
+<code># ./wrath -o tcp -tR "src net 10 and not host *me*"</code>
+
+This performs a DoS on any packets whose IP source address matches 10.&#42;.&#42;.&#42; and does
+not match the identifier specified by *me*.
 
 _Dependencies_: libnet, pcap
 
