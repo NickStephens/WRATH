@@ -35,7 +35,7 @@ not match the identifier specified by *me*.
 
 ##### Features to Come:
 * HTTP Request Injection
-* FTP Command Injection
+* IRC Message Injection
 * NTP Command Injection
 
 _Dependencies_: libnet, pcap
