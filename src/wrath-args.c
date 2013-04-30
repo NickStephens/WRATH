@@ -36,72 +36,25 @@ void initialize(struct arg_values *);
  */
 void arg_eval(int argc, char *argv[], struct arg_values *values) {
 	char *opt;
-	int i;
+	int i, c;
 	initialize(values);
-	for (i = 1; i < argc; i++) { // skipping first argument, program name
-		opt = argv[i];
-		if (strcmp(opt, "-i") == 0) { // interface
-			char *interface = argv[++i];
-			usage_error(i, argc, "missing interface name for ", opt);
-			values->interface = interface;
+	while((i = getopt(argc, argv, "hn:o:c:i:f:t")) != -1) {
+		switch(i) {
+			case 'h': usage_error(0,0,"","");
+			case 'n': values->count = atoi(optarg);
+			case 'o': values->operation = optarg;
+			case 'c': values->command = optarg;
+			case 'i': values->interface = optarg;
+			case 'f': values->input_file = optarg;
+			case 't': c = atoi(optarg); switch(c) {
+				case 'U': values->tcp_urg = 0x20;
+				case 'A': values->tcp_urg = 0x10;
+				case 'P': values->tcp_urg = 0x08;
+				case 'R': values->tcp_urg = 0x04;
+				case 'S': values->tcp_urg = 0x02;
+				case 'F': values->tcp_urg = 0x01;
+				}
 		}
-		else if (strcmp(opt, "-f") == 0) { // input file
-			char *file = argv[++i];
-			usage_error(i, argc, "missing file name for ", opt);
-			values->input_file = file;
-		}
-		else if (strcmp(opt, "-o") == 0) { // explicitly specify operation
-			char *operation= argv[++i];
-			usage_error(i, argc, "missing operation name for ", opt);
-			values->operation = operation;
-		}
-		else if (strcmp(opt, "-c") == 0) { // explicitly specify command 
-			char *command = argv[++i];
-			usage_error(i, argc, "missing command for ", opt);
-			values->command = command;
-		}
-		else if (strcmp(opt, "-tU") == 0) { // URG
-			values->tcp_urg = 0x20;
-		}
-		else if (strcmp(opt, "-tA") == 0) { // ACK
-			values->tcp_ack = 0x10;   // mark ack flag off
-		}
-		else if (strcmp(opt, "-tP") == 0) { // PSH
-			values->tcp_psh = 0x08;
-		}
-		else if (strcmp(opt, "-tR") == 0) { // RST
-			values->tcp_rst = 0x04;
-		}
-		else if (strcmp(opt, "-tS") == 0) { // SYN
-			values->tcp_syn = 0x02;
-		}
-		else if (strcmp(opt, "-tF") == 0) { // FIN
-			values->tcp_fin = 0x01;
-		}
-		else if (strcmp(opt, "-h") == 0) { // Usage Information
-			usage_error(0,0,"","");
-		} else if (strcmp(opt, "-s") == 0) { // sleep time 
-			char *sleep_time;
-			usage_error(i, argc, "missing time for ", opt);
-			values->sleep_time = atoi(argv[++i]);
-		}	
-		else if (strcmp(opt, "-n") == 0) { // count, the amount of packets for interface to victimize
-			char *capture_amount = argv[++i];
-			usage_error(i, argc, "missing number for ", opt);
-			values->count = atoi(capture_amount);
-		} 
-		else if (i == (argc - 1)) { // if it's the final argument and not an option, it's a bpf
-				if (*opt == '-') // if it's decorated like an option
-					usage_error(0,0,UNRECOGNIZED_OPTION, opt);
-				values->filter = opt;
-		} else if (i == (argc - 3)) { // if it's the 3rd from last argument and not an options its an operation and command
-				if (*opt == '-') // if it's decorated like an option
-					usage_error(0,0,UNRECOGNIZED_OPTION, opt);
-				values->operation = opt;
-				values->command = argv[++i];
-		}
-		else
-			usage_error(0, 0, UNRECOGNIZED_OPTION, opt);
 	}
 }
 
@@ -112,6 +65,7 @@ void arg_eval(int argc, char *argv[], struct arg_values *values) {
  * @param struct arg_values *, structure to be initialized
  */
 void initialize(struct arg_values *values) {
+	/*
 	values->operation = "\0";
 	values->command = "\0";
 	values->filter = "\0";
@@ -125,6 +79,7 @@ void initialize(struct arg_values *values) {
 	values->tcp_fin = 0x00;	
 	values->count = -1;
 	values->sleep_time = -1;
+	*/
 }
 
 /**
