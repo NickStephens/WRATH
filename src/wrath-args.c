@@ -7,7 +7,7 @@
 #define UNRECOGNIZED_OPTION "unrecognized option "
 
 #define USAGE "usage: wrath [options] [operation] [filter] \n \
-	       example: wrath -i eth0 -f spook.html http \"OK 200\" \"src host 10.0.0.7\" \n \
+	       example: wrath -i eth0 -f appheaders/redirect http \"src host 10.0.0.7\" \n \
 	       \n \
 	       	-h 	display this help \n \
 	       	-n	number of packets to intercept \n \
@@ -20,8 +20,7 @@
 		-tP 	mark tcp PSH flag \n \
 		-tR 	mark tcp RST flag \n \
 		-tS 	mark tcp SYN flag \n \
-		-tF 	mark tcp FIN flag \n\
-		-s	set sleep time (in millisecond) between packet injections\n"
+		-tF 	mark tcp FIN flag \n"
 
 void usage_error(int, int, char *, char *);
 void initialize(struct arg_values *);
