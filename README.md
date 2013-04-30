@@ -26,12 +26,17 @@ effectively telling the client that all server's are denying its connection.
 The above examples have one problem: they only target a single victim on the LAN.
 
 This can easily change, because WRATH uses the Berkely Packet Filter syntax to determine which packets
-are captured, we can easily modify the attacks to affect an entire network.
+are captured, we can modify the attacks to affect an entire network.
 
 <code># ./wrath -o tcp -tR "src net 10 and not host *me*"</code>
 
 This performs a DoS on any packets whose IP source address matches 10.&#42;.&#42;.&#42; and does
 not match the identifier specified by *me*.
+
+##### Features to Come:
+* HTTP Request Injection
+* FTP Command Injection
+* NTP Command Injection
 
 _Dependencies_: libnet, pcap
 
