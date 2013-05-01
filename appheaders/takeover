@@ -9,10 +9,12 @@ Connection: close\r
 	<style type="text/css"> 
 	body
 	{ 
-	background-color: blue;
+	background-color: black;
 	color: white;
+	font-family: "Courier New";
+	font-size: 4em;
 	}	
 	</style>
 	<body> 
-	<h1> This connection has been taken over. </h1>
+	<center>This connection has been taken over.</center>
 </html>
