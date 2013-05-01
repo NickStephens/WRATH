@@ -38,7 +38,7 @@ not match the identifier specified by *me*.
 * IRC Message Injection
 * NTP Command Injection
 
-_Dependencies_: libnet, pcap
+_Dependencies_: libnet v1.1.6, libpcap v1.3
 
 _Disclaimer_:
 This project was heavily influenced by Jon Erickson's book, _Hacking:
