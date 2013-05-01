@@ -4,17 +4,17 @@
  structure for argument evalutation
 */
 struct arg_values {
-	char *interface; // listening interface
-	char *input_file; // application-level encoding
+	char interface[20]; // listening interface
+	char input_file[100]; // application-level encoding
 	int tcp_urg; // tcp-flags to set (booleans)
 	int tcp_ack;
 	int tcp_psh;
 	int tcp_rst;
 	int tcp_syn;
 	int tcp_fin;
-	char *operation; // application-level operation
-	char *command; // application-level command
-	char *filter; // bpf
+	char operation[20]; // application-level operation
+	char command[100]; // application-level command
+	char filter[300]; // bpf
 	int count; // how many packets to victimize
 	int sleep_time; // amount of millisecond to wait in between packet injection
 };
