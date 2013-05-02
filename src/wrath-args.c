@@ -39,7 +39,7 @@ void arg_eval(int argc, char *argv[], struct arg_values *values) {
 	int i, c;
 	//	initialize(values);
 	memset(values, 0x00, (sizeof (struct arg_values)));
-	while((i = getopt(argc, argv, "hn:o:c:i:f:t")) != -1) {
+	while((i = getopt(argc, argv, "hn:o:c:i:f:t:")) != -1) {
 		switch(i) {
 			case 'h': usage_error(0,0,"",""); break;
 			case 'n': values->count = atoi(optarg); break;
@@ -47,15 +47,14 @@ void arg_eval(int argc, char *argv[], struct arg_values *values) {
 			case 'c': strcpy(values->command, optarg); break;
 			case 'i': strcpy(values->interface, optarg); break;
 			case 'f': strcpy(values->input_file, optarg); break;
-			case 't': c = getopt(argc,argv,"UPFRSA"); /* switch(c) {
-				case 'U': values->tcp_urg = 0x20;
-				case 'A': values->tcp_urg = 0x10;
-				case 'P': values->tcp_urg = 0x08;
-				case 'R': values->tcp_urg = 0x04;
-				case 'S': values->tcp_urg = 0x02;
-				case 'F': values->tcp_urg = 0x01;
-				} */
-				//printf("%d, %s\n", c);
+			case 't': c = optarg[0]; switch(c) {
+				case 'U': values->tcp_urg = 0x20; break;
+				case 'A': values->tcp_ack = 0x10; break;
+				case 'P': values->tcp_psh = 0x08; break;
+				case 'R': values->tcp_rst = 0x04; break;
+				case 'S': values->tcp_syn = 0x02; break;
+				case 'F': values->tcp_fin = 0x01; break;
+				}
 		}
 	}
 }

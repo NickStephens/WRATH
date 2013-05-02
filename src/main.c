@@ -13,6 +13,13 @@ int main(int argc, char *argv[]) {
 	printf("Interface: %s\n", user_values->interface);
 	printf("Input File: %s\n", user_values->input_file);
 
+	printf("RST: 0x%02x\n", user_values->tcp_rst);
+	printf("URG: 0x%02x\n", user_values->tcp_urg);
+	printf("PSH: 0x%02x\n", user_values->tcp_psh);
+	printf("FIN: 0x%02x\n", user_values->tcp_fin);
+	printf("SYN: 0x%02x\n", user_values->tcp_syn);
+	printf("ACK: 0x%02x\n", user_values->tcp_ack);
+
 	//wrath_observe(user_values);
 
 	free(user_values);
