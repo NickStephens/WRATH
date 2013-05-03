@@ -6,24 +6,7 @@
 #define PARAMETER_MISSING "missing parameter for "
 #define UNRECOGNIZED_OPTION "unrecognized option "
 
-#define USAGE "usage: wrath [options] [operation] [filter] \n \
-	       example: wrath -i eth0 -f appheaders/redirect http \"src host 10.0.0.7\" \n \
-	       \n \
-	       	-h 	display this help \n \
-	       	-n	number of packets to intercept \n \
-	       	-o	explicitly supply operation \n \
-	       	-c 	explicitly supply command \n \
-	       	-i 	interface \n \
-	       	-f 	input file \n \
-	       	-tU 	mark tcp URG flag \n \
-	       	-tA 	unmark tcp ACK flag \n \
-		-tP 	mark tcp PSH flag \n \
-		-tR 	mark tcp RST flag \n \
-		-tS 	mark tcp SYN flag \n \
-		-tF 	mark tcp FIN flag \n"
-
-void usage_error(int, int, char *, char *);
-void initialize(struct arg_values *);
+void usage();
 
 /**
  * Scans the command-line arguments and 
@@ -37,50 +20,32 @@ void initialize(struct arg_values *);
 void arg_eval(int argc, char *argv[], struct arg_values *values) {
 	char *opt;
 	int i, c;
-	//	initialize(values);
+
+	int cnt = 0;
 	memset(values, 0x00, (sizeof (struct arg_values)));
-	while((i = getopt(argc, argv, "hn:o:c:i:f:t:")) != -1) {
+	while((i = getopt(argc, argv, "hn:o:c:i:f:t:a:")) != -1) {
 		switch(i) {
-			case 'h': usage_error(0,0,"",""); break;
-			case 'n': values->count = atoi(optarg); break;
-			case 'o': strcpy(values->operation, optarg); break;
-			case 'c': strcpy(values->command, optarg); break;
-			case 'i': strcpy(values->interface, optarg); break;
-			case 'f': strcpy(values->input_file, optarg); break;
-			case 't': c = optarg[0]; switch(c) {
+			case 'h': usage;
+			case 'n': values->count = atoi(optarg); cnt = cnt+2; break;
+			case 'o': strcpy(values->operation, optarg); cnt = cnt+2; break;
+			case 'c': strcpy(values->command, optarg); cnt = cnt+2; break;
+			case 'i': strcpy(values->interface, optarg); cnt = cnt+2; break;
+			case 'a': strcpy(values->input_file, optarg); cnt = cnt+2; break;
+			case 'f': strcpy(values->filter, optarg); cnt = cnt+2; break;
+			case 't': c = optarg[0]; cnt++; switch(c) {
 				case 'U': values->tcp_urg = 0x20; break;
 				case 'A': values->tcp_ack = 0x10; break;
 				case 'P': values->tcp_psh = 0x08; break;
 				case 'R': values->tcp_rst = 0x04; break;
 				case 'S': values->tcp_syn = 0x02; break;
 				case 'F': values->tcp_fin = 0x01; break;
-				}
+				default: usage();
+				} break;
+			default: usage();
 		}
 	}
-}
-
-/**
- * intializes an arg_values struct by setting
- * all its members to an appropriate default 
- * setting.
- * @param struct arg_values *, structure to be initialized
- */
-void initialize(struct arg_values *values) {
-	/*
-	values->operation = "\0";
-	values->command = "\0";
-	values->filter = "\0";
-	values->interface = "\0";
-	values->input_file = "\0";
-	values->tcp_urg = 0x00;	
-	values->tcp_ack = 0x00;
-	values->tcp_psh = 0x00;	
-	values->tcp_rst = 0x00;	
-	values->tcp_syn = 0x00;	
-	values->tcp_fin = 0x00;	
-	values->count = -1;
-	values->sleep_time = -1;
-	*/
+	if (cnt < argc - 1)
+		strcpy(values->filter, argv[++cnt]);
 }
 
 /**
@@ -90,10 +55,22 @@ void initialize(struct arg_values *values) {
  * @param int, argument count
  * @param char *, a string with an error message
  */
-void usage_error(int pos, int argc, char *mesg, char *opt) {
-	if (pos >= argc) {	
-		fprintf(stderr, "%s %s\n", mesg, opt);
-		fprintf(stderr, "%s", USAGE);
-		exit(EXIT_FAILURE);
-	}
+void usage() {
+	printf("usage: wrath [options] [filter]\n");
+	printf("example: wrath -a appheaders/takeover -o http \"src host 10.0.0.7\"\n"); 
+	printf("\n");
+	printf("\t-h\tdisplay this help\n");
+	printf("\t-n\tnumber of packets to intercept\n");
+	printf("\t-o\texplicitly supply operation\n");
+	printf("\t-c\texplicitly supply command\n");
+	printf("\t-f\texplicitly supply filter\n");
+	printf("\t-i\tinterface\n");
+	printf("\t-a\tattach input file as payload\n");
+	printf("\t-tU\tmark tcp URG flag\n");
+	printf("\t-tA\tunmark tcp ACK flag\n");
+	printf("\t-tP\tmark tcp PUSH flag\n");
+	printf("\t-tR\tmark tcp RST flag\n");
+	printf("\t-tS\tmark tcp SYN flag\n");
+	printf("\t-tF\tmark tcp FIN flag\n");
+	exit(0);
 }

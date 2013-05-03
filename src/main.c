@@ -7,6 +7,7 @@ int main(int argc, char *argv[]) {
 	user_values = (struct arg_values *) malloc(sizeof (struct arg_values));
 	arg_eval(argc, argv, user_values);	
 
+	printf("Filter: %s\n", user_values->filter);
 	printf("Number: %d\n", user_values->count);
 	printf("Operation: %s\n", user_values->operation);
 	printf("Command: %s\n", user_values->command);
