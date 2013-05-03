@@ -1,14 +1,14 @@
 ## WRATH
 #### <i> What? Really? Another TCP Hijacker? </i>
 
-<code># wrath [options] [operation] [filter] </code>
+<code># wrath [options] [filter] </code>
 
 WRATH is a generic TCP hijacker capable of taking over TCP virtual circuits taking place 
 on your LAN and injecting fabricated data into the circuit.
 
 For example taking over a server's http connection to a client might look like this:
 
-<code># ./wrath -f appheaders/takeover -o http "src host *client* and port 80"</code>
+<code># ./wrath -a appheaders/takeover -o http "src host *client* and port 80"</code>
 
 This will hijack all HTTP connections responding to the *client* and append the file 
 appheaders/takeover to the attacking packet's payload. (HTTP Response hijacking actually 
@@ -36,7 +36,7 @@ not match the identifier specified by *me*.
 ##### Features to Come:
 * HTTP Request Injection
 * IRC Message Injection
-* NTP Command Injection
+* Hijack Logging
 
 _Dependencies_: libnet v1.1.6, libpcap v1.3
 

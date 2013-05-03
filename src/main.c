@@ -7,6 +7,7 @@ int main(int argc, char *argv[]) {
 	user_values = (struct arg_values *) malloc(sizeof (struct arg_values));
 	arg_eval(argc, argv, user_values);	
 
+	/*
 	printf("Filter: %s\n", user_values->filter);
 	printf("Number: %d\n", user_values->count);
 	printf("Operation: %s\n", user_values->operation);
@@ -20,8 +21,9 @@ int main(int argc, char *argv[]) {
 	printf("FIN: 0x%02x\n", user_values->tcp_fin);
 	printf("SYN: 0x%02x\n", user_values->tcp_syn);
 	printf("ACK: 0x%02x\n", user_values->tcp_ack);
+	*/
 
-	//wrath_observe(user_values);
+	wrath_observe(user_values);
 
 	free(user_values);
 }

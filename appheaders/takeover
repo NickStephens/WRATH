@@ -14,7 +14,15 @@ Connection: close\r
 	font-family: "Courier New";
 	font-size: 4em;
 	}	
+	a { font-size: 4.1em }
+	a:link { color: white }
+	a:visited { color: white }
 	</style>
 	<body> 
-	<center>This connection has been taken over.</center>
+	<center>
+	This connection has been taken over.
+	<br>
+	<br>
+	<a href="https://github.com/NickStephens/WRATH">WRATH</a>
+	</center>
 </html>
