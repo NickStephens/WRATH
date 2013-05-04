@@ -6,9 +6,25 @@
 WRATH is a generic TCP hijacker capable of taking over TCP virtual circuits taking place 
 on your LAN and injecting fabricated data into the circuit.
 
+##### What makes WRATH generic?
+
+WRATH is generic because it can hijack any unconfidential (unencrypted) or unauthorized
+protocol by simply providing a valid-looking payload and protocol search string. When
+an operation is given that WRATH doesn't recognize it will then just search for the given
+pattern in the captured packet's application header. If a match is found within the 
+captured packet's application header, WRATH will inject a packet with the payload contained 
+in the file or command specified, and effectively forging a response to the captured packet.
+
+> RECOGNIZED OPERATIONS: <br>
+> http response <br>
+> http request <br>
+> tcp <br>
+
+##### Examples:
+
 For example taking over a server's http connection to a client might look like this:
 
-<code># ./wrath -a appheaders/takeover -o http "src host *client* and port 80"</code>
+<code># ./wrath -a appheaders/takeover -o http-resp "src host *client* and port 80"</code>
 
 This will hijack all HTTP connections responding to the *client* and append the file 
 appheaders/takeover to the attacking packet's payload. (HTTP Response hijacking actually 
@@ -34,7 +50,6 @@ This performs a DoS on any packets whose IP source address matches 10.&#42;.&#42
 not match the identifier specified by *me*.
 
 ##### Features to Come:
-* HTTP Request Injection
 * IRC Message Injection
 * Hijack Logging
 
