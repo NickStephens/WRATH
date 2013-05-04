@@ -1,10 +1,14 @@
-#include <stdio.h>
+#include <libnet.h>
 
-/* takes a character stream from a file and converts the
- * the contents into network byte ordering 
- * host-to-network-header */
-char *wrath_htonh(const u_char *stream);
+/* Launches an HTTP Response
+ * @param data_pass, contains the libnet_handle among other things
+ * @param packet, the packet captured by pcap
+ * @param payload, the payload of the packet to inject
+ * @param ack_increment, the amount to increment the acknowledgement number
+ */
+void wrath_launch_http_response(u_char *, const u_char *, u_char *, int);
 
-/* takes all newlines in an http header and converts
- * them to carriage-returns */
-char *wrath_http_nltocr(const u_char *stream);
+/* Launches a generic attack packet
+ * @params (same as wrath_launch_http_response)
+ */
+void wrath_launch_generic(u_char *, const u_char *, u_char *, int);
