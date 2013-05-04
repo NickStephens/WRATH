@@ -19,6 +19,7 @@ in the file or command specified, and effectively forging a response to the capt
 > http response <br>
 > http request <br>
 > tcp <br>
+> no-string (for any packet which contains application data) <br>
 
 ##### Examples:
 
