@@ -14,7 +14,7 @@ void wrath_capture_stats(struct libnet_ipv4_hdr *iphdr, struct libnet_tcp_hdr *t
 	printf("%d bytes of data\n\n", app_length);
 }
 
-void wrath_attack_packet_stats(struct libnet_ipv4_hdr *iphdr, struct libnet_tcp_hdr *tcphdr, int ack_increment, int tcp_sum, int payload_size, u_char *payload) {
+void wrath_attack_packet_stats(struct libnet_ipv4_hdr *iphdr, struct libnet_tcp_hdr *tcphdr, int ack_increment, int tcp_sum, int payload_size) {
 
 	printf("%s:%hu -->", inet_ntoa(iphdr->ip_dst), ntohs(tcphdr->th_dport));
 	printf(" %s:%hu\n", inet_ntoa(iphdr->ip_src), ntohs(tcphdr->th_sport));
@@ -22,9 +22,7 @@ void wrath_attack_packet_stats(struct libnet_ipv4_hdr *iphdr, struct libnet_tcp_
 	printf("Ack: %u\n", ntohl(tcphdr->th_seq) + ack_increment);
 	printf("Control: 0x%04x\n", tcp_sum);
 	printf("%d bytes of data\n", payload_size);
-
-	printf("Payload:\n %s", payload);
-	printf("---------------------\n");
+	printf("----------------\n");
 }
 
 void wrath_tcp_raw_build_and_launch(u_char *args, const u_char *packet) {
@@ -43,7 +41,7 @@ void wrath_tcp_raw_build_and_launch(u_char *args, const u_char *packet) {
 	printf("Hijacking ... ");
 	wrath_capture_stats(iphdr, tcphdr, 0);
 	printf("With ... ");
-	wrath_attack_packet_stats(iphdr, tcphdr, 0, tcp_sum, 0, NULL);
+	wrath_attack_packet_stats(iphdr, tcphdr, 0, tcp_sum, 0);
 	
 	/* building tcp header */
 	libnet_build_tcp( ntohs(tcphdr->th_dport), ntohs(tcphdr->th_sport), ntohl(tcphdr->th_ack),
@@ -105,7 +103,7 @@ void wrath_tcp_belly_build_and_launch(u_char *args, const u_char *packet, unsign
 	printf("Hijacking ... ");
 	wrath_capture_stats(iphdr, tcphdr, ack_increment);
 	printf("With ... ");
-	wrath_attack_packet_stats(iphdr, tcphdr, ack_increment, tcp_sum, strlen(payload), payload);
+	wrath_attack_packet_stats(iphdr, tcphdr, ack_increment, tcp_sum, strlen(payload));
 	
 	/* libnet_build_tcp */
 	libnet_build_tcp(
