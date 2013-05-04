@@ -3,9 +3,6 @@
 #include <stdio.h>
 #include "wrath-structs.h"
 
-#define PARAMETER_MISSING "missing parameter for "
-#define UNRECOGNIZED_OPTION "unrecognized option "
-
 void usage();
 
 /**
@@ -25,7 +22,7 @@ void arg_eval(int argc, char *argv[], struct arg_values *values) {
 	memset(values, 0x00, (sizeof (struct arg_values)));
 	while((i = getopt(argc, argv, "hn:o:c:i:f:t:a:")) != -1) {
 		switch(i) {
-			case 'h': usage;
+			case 'h': usage();
 			case 'n': values->count = atoi(optarg); cnt = cnt+2; break;
 			case 'o': strcpy(values->operation, optarg); cnt = cnt+2; break;
 			case 'c': strcpy(values->command, optarg); cnt = cnt+2; break;
@@ -57,7 +54,7 @@ void arg_eval(int argc, char *argv[], struct arg_values *values) {
  */
 void usage() {
 	printf("usage: wrath [options] [filter]\n");
-	printf("example: wrath -a appheaders/takeover -o http \"src host 10.0.0.7\"\n"); 
+	printf("example: wrath -o http-resp -a appheaders/takeover \"src host 10.0.0.7\"\n"); 
 	printf("\n");
 	printf("\t-h\tdisplay this help\n");
 	printf("\t-n\tnumber of packets to intercept\n");
@@ -67,10 +64,16 @@ void usage() {
 	printf("\t-i\tinterface\n");
 	printf("\t-a\tattach input file as payload\n");
 	printf("\t-tU\tmark tcp URG flag\n");
-	printf("\t-tA\tunmark tcp ACK flag\n");
+	printf("\t-tA\tmark tcp ACK flag\n");
 	printf("\t-tP\tmark tcp PUSH flag\n");
 	printf("\t-tR\tmark tcp RST flag\n");
 	printf("\t-tS\tmark tcp SYN flag\n");
 	printf("\t-tF\tmark tcp FIN flag\n");
+	printf("\n");
+	printf("\tOPERATIONS:\n");
+	printf("\t* http-resp\t:: HTTP Response\n");
+	printf("\t* http-rqst\t:: HTTP Request\n");
+	printf("\t* tcp\t\t:: bare tcp\n");
+	printf("\t* no-string\t:: any packet with application data\n");
 	exit(0);
 }

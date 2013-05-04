@@ -54,6 +54,11 @@ not match the identifier specified by *me*.
 * IRC Message Injection
 * Hijack Logging
 
+###### Perfect For:
+* frightening your roomies
+* getting kicked out of Starbucks
+* Kevin Mitnick roleplay
+
 _Dependencies_: libnet v1.1.6, libpcap v1.3
 
 _Disclaimer_:
