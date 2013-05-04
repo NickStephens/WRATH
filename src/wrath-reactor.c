@@ -7,7 +7,6 @@
 #define ACK_PACKETS_EXT "tcp[tcpflags] & tcp-ack != 0 and %s"
 
 void wrath_inject(u_char *, const struct pcap_pkthdr *, const u_char *);
-// will need to cast the pointer to u_char. (struct arg_vals *) args
 
 // places wrath in the position to capture the victims packets
 pcap_t *wrath_position(struct arg_values *cline_args) {
@@ -30,16 +29,7 @@ pcap_t *wrath_position(struct arg_values *cline_args) {
 
 	printf("Watching victims on %s\n", device);	
 
-	/* snaplen
-	   14 bytes for ethernet header
-	   20 bytes for internet protocol header (without options)	   
-		-option possibilities
-	   20 bytes for transmission control protocol header (without options) 
-
-	   It's a possibility that while sniffing webserver traffic we may want to
-	   leave enough room to sniff HEADER information
-	*/
-	pcap_handle = pcap_open_live(device, 4026, 1, 0, errbuf); //
+	pcap_handle = pcap_open_live(device, 4026, 1, 0, errbuf); 
 	if (pcap_handle == NULL)
 		pcap_perror(pcap_handle, errbuf);
 	
@@ -81,8 +71,6 @@ void wrath_observe(struct arg_values *cline_args) {
 	chp->cline_args = cline_args;
 
 	/* initializing sniffer, getting into position */
-	/* might be problems with the pieces of memory for 
-	structs created in position, especially errbuf and device */
 	pcap_handle = wrath_position(cline_args); 
 
 	/* grabbing device name for libnet */
@@ -136,7 +124,7 @@ void wrath_observe(struct arg_values *cline_args) {
 	libnet_seed_prand(libnet_handle);
 
 	int cap_amount = -1;
-	if (cline_args->count != -1) // if count is set
+	if (cline_args->count != 0) // if count is set
 		cap_amount = cline_args->count;
 
 	pcap_loop(pcap_handle, cap_amount, wrath_inject, (u_char *) chp);

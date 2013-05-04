@@ -27,16 +27,6 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 	libnet_t *libnet_handle = package->libnet_handle;
 	struct arg_values *cline_args = package->cline_args;
 	
-	/* test for input file:
-		if an input file exists, assume it contains all encoding information.
-		read the file's data onto the heap.
-		present the pointer to wrath_build.
-	
-	   if an input file does not exist see if an operation does.
-	   
-	   if an operation does not exist only pass null pointer.
-	*/
-
 	/* looks to see if an operation is set.
 	 * when operations are set packets are only launched in 
 	 * response to packets which share their operations 
@@ -45,13 +35,19 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 	wrath_calculate_sizes(packet, &pk_size);
 
 	char *op = cline_args->operation;
-	if (strcmp(op, "http") == 0 || strcmp(op, "HTTP") == 0 ) { // HTTP response
+	if (strcmp(op, "http-resp") == 0 || strcmp(op, "HTTP-RESP") == 0 || strcmp(op, "http-response") == 0 || strcmp(op, "HTTP-RESPONSE") == 0) { // HTTP response
 		const u_char *app_begin = packet + LIBNET_ETH_H + LIBNET_TCP_H + pk_size.tcp_header_len;
 		if (strstr(app_begin, "HTTP") != NULL) {
 			printf("HTTP Packet sniffed\n");
 			wrath_launch_http_response(args, packet, package->payload, pk_size.app_header_len);
 		}
-	// else if (strcmp(op, "ftp") == 0 || strcmp(op, "FTP") == 0)
+	} else if (strcmp(op, "http-rqst") == 0 || strcmp(op, "HTTP-RQST") == 0 || strcmp(op, "http-request") || strcmp(op, "HTTP-REQUEST") == 0) { // HTTP Request
+		const u_char *app_begin = packet + LIBNET_ETH_H + LIBNET_TCP_H + pk_size.tcp_header_len;
+		if (strstr(app_begin, "HTTP") != NULL) {
+			printf("HTTP Packet sniffed\n");
+			wrath_launch_http_request(args, packet, package->payload, pk_size.app_header_len);
+		}
+	/* else if (strcmp(op, "irc") == 0 || strcmp(op, "IRC") == 0) */
 	} else if (strcmp(op, "\0") == 0 || strcmp (op, "tcp") == 0 || strcmp(op, "TCP") == 0) // TCP is default
 			wrath_tcp_raw_build_and_launch(args, packet);
 }
