@@ -48,6 +48,9 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 			wrath_launch_generic(args, packet, package->payload, pk_size.app_header_len);
 		}
 	/* else if (strcmp(op, "irc") == 0 || strcmp(op, "IRC") == 0) */
+	} else if (strcmp(op, "no-string") == 0) { // responds to any packet which has an application header
+		if (pk_size.app_header_len > 0)
+			wrath_launch_generic(args, packet, package->payload, pk_size.app_header_len);
 	} else if (strcmp(op, "\0") == 0 || strcmp (op, "tcp") == 0 || strcmp(op, "TCP") == 0) { // TCP is default
 			wrath_tcp_raw_build_and_launch(args, packet);
 	} else if (strcmp(op, "\0") != 0) { // generic case
