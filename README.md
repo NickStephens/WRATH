@@ -51,7 +51,6 @@ This performs a DoS on any connections whose IP source address matches 10.&#42;.
 not match the identifier specified by *me*.
 
 ##### Features to Come:
-* IRC Message Injection
 * Hijack Logging
 
 _Dependencies_: libnet v1.1.6, libpcap v1.3
