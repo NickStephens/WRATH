@@ -47,7 +47,11 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 			printf("HTTP Packet sniffed\n");
 			wrath_launch_generic(args, packet, package->payload, pk_size.app_header_len);
 		}
-	/* else if (strcmp(op, "irc") == 0 || strcmp(op, "IRC") == 0) */
+	} else if (strcmp(op, "irc") == 0 || strcmp(op, "IRC") == 0) { 
+		if (strstr(app_begin, "PING") == NULL && strstr(app_begin, "PONG") == NULL && pk_size.app_header_len > 0) { // Ignore server client checkups
+			printf("IRC Packet sniffed\n");
+			wrath_launch_generic(args, packet, package->payload, pk_size.app_header_len);
+		}
 	} else if (strcmp(op, "no-string") == 0) { // responds to any packet which has an application header
 		if (pk_size.app_header_len > 0)
 			wrath_launch_generic(args, packet, package->payload, pk_size.app_header_len);

@@ -1,0 +1,24 @@
+HTTP/1.1 200 OK\r
+Server: WRATH\r
+Connection: close\r
+\r
+<html>
+  <head>
+    <title>We Are Legion. Expect Us.</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
+
+    <script type="text/javascript">
+    swfobject.embedSWF("http://ada.evergreen.edu/~thonic16/fabio.swf", "myContent", "100%", "100%", "9.0.0");
+    </script>
+
+    <style type="text/css">
+	body { background-color: black; }
+    </style>
+  </head>
+  <body>
+    <div id="myContent">
+      <p>What's wrong pup?</p>
+    </div>
+  </body>
+</html>
