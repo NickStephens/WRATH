@@ -47,21 +47,19 @@ are captured, we can modify the attacks to affect an entire network.
 
 <code># ./wrath -o tcp -tR "src net 10 and not host *me*"</code>
 
-This performs a DoS on any packets whose IP source address matches 10.&#42;.&#42;.&#42; and does
+This performs a DoS on any connections whose IP source address matches 10.&#42;.&#42;.&#42; and does
 not match the identifier specified by *me*.
 
 ##### Features to Come:
 * IRC Message Injection
 * Hijack Logging
 
-###### Perfect For:
-* frightening your roomies
-* getting kicked out of Starbucks
-* Kevin Mitnick roleplay
-
 _Dependencies_: libnet v1.1.6, libpcap v1.3
 
 _Disclaimer_:
-This project was heavily influenced by Jon Erickson's book, _Hacking:
+* This tool is intended for educational purposes only and is not
+intended for any illegal activities. The author is not responsible
+for any harm caused by this tool.
+* This project was heavily influenced by Jon Erickson's book, _Hacking:
 The Art of Exploitation_. Many of the practices and techniques used in
 this codebase I learned from that book.
