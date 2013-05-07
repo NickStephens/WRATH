@@ -50,8 +50,6 @@ char *wrath_char_encode(char *str, char *new_str) {
 	while (*new_str != '\0') {
 		if (*new_str == '\\') {
 			++new_str;
-			if (*new_str == 'n')
-				*new_str = (char) 0x0a;
 			if (*new_str == 'r')
 				*new_str = (char) 0x0d;
 			shiftl(--new_str);

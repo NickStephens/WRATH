@@ -15,6 +15,7 @@ struct arg_values {
 	char operation[20]; // application-level operation
 	char command[100]; // application-level command
 	char filter[300]; // bpf
+	char logfile[100]; // logfile
 	int count; // how many packets to victimize
 	int sleep_time; // amount of millisecond to wait in between packet injection
 };

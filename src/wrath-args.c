@@ -20,9 +20,10 @@ void arg_eval(int argc, char *argv[], struct arg_values *values) {
 
 	int cnt = 0;
 	memset(values, 0x00, (sizeof (struct arg_values)));
-	while((i = getopt(argc, argv, "hn:o:c:i:f:t:a:")) != -1) {
+	while((i = getopt(argc, argv, "hn:o:c:i:f:t:a:l:")) != -1) {
 		switch(i) {
 			case 'h': usage();
+			case 'l': strcpy(values->logfile, optarg); cnt = cnt+2; break;
 			case 'n': values->count = atoi(optarg); cnt = cnt+2; break;
 			case 'o': strcpy(values->operation, optarg); cnt = cnt+2; break;
 			case 'c': strcpy(values->command, optarg); cnt = cnt+2; break;
