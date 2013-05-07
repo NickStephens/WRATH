@@ -25,6 +25,7 @@ struct lcp_package {
 	libnet_t *libnet_handle; // libnet context
 	struct arg_values *cline_args; // command-line arguments
 	char *payload; // libnet payload attachment
+	FILE *logfile; // logfile pointer
 };
 
 /* injection information */

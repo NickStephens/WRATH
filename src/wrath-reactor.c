@@ -65,9 +65,12 @@ void wrath_observe(struct arg_values *cline_args) {
 	char libnet_errbuf[LIBNET_ERRBUF_SIZE];
 	char pcap_errbuf[PCAP_ERRBUF_SIZE];
 	char *device;
+	int openned = 0;
 
 	/* initializing bundle */
 	chp = (struct lcp_package *) malloc(sizeof (struct lcp_package));
+	memset(chp, 0x00, sizeof(struct lcp_package));
+
 	chp->cline_args = cline_args;
 
 	/* initializing sniffer, getting into position */
@@ -123,6 +126,14 @@ void wrath_observe(struct arg_values *cline_args) {
 	// seeding psuedorandom number generator
 	libnet_seed_prand(libnet_handle);
 
+	// finding and setting up logfile
+	FILE *fp;
+	if ((strcmp(cline_args->logfile, "\0"))) {
+		fp = fopen(cline_args->logfile, "w");
+		int openned = 1;
+		chp->logfile = fp;
+	}
+
 	int cap_amount = -1;
 	if (cline_args->count != 0) // if count is set
 		cap_amount = cline_args->count;
@@ -137,6 +148,8 @@ void wrath_observe(struct arg_values *cline_args) {
 	printf("Wrath Stats: \n");
 	printf("Packets Injected: %d\n", l_stats.packets_sent);
 
+	if (openned)
+		fclose(fp);
 	libnet_destroy(libnet_handle);
 	free(app_cmd_con);
 	free(chp);

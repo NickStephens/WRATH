@@ -27,7 +27,8 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 	struct lcp_package *package = (struct lcp_package *) args;
 	libnet_t *libnet_handle = package->libnet_handle;
 	struct arg_values *cline_args = package->cline_args;
-	
+	FILE *out = package->logfile == 0 ? stdout : package->logfile;
+
 	/* looks to see if an operation is set.
 	 * when operations are set packets are only launched in 
 	 * response to packets which share their operations 
@@ -39,28 +40,28 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 	char *op = cline_args->operation;
 	if (strcmp(op, "http-resp") == 0 || strcmp(op, "HTTP-RESP") == 0 || strcmp(op, "http-response") == 0 || strcmp(op, "HTTP-RESPONSE") == 0) { // HTTP response
 		if (strstr(app_begin, "HTTP") != NULL) {
-			printf("HTTP Packet sniffed\n");
-			wrath_launch_http_response(args, packet, package->payload);
+			fprintf(out , "HTTP Packet sniffed\n", 20);
+			wrath_launch_http_response(args, packet, package->payload, out);
 		}
 	} else if (strcmp(op, "http-rqst") == 0 || strcmp(op, "HTTP-RQST") == 0 || strcmp(op, "http-request") == 0 || strcmp(op, "HTTP-REQUEST") == 0) { // HTTP Request
 		if (strstr(app_begin, "HTTP") != NULL) {
-			printf("HTTP Packet sniffed\n");
-			wrath_launch_generic(args, packet, package->payload);
+			fprintf(out , "HTTP Packet sniffed\n", 20);
+			wrath_launch_generic(args, packet, package->payload, out);
 		}
 	} else if (strcmp(op, "irc") == 0 || strcmp(op, "IRC") == 0) { 
 		if (strstr(app_begin, "PING") == NULL && strstr(app_begin, "PONG") == NULL && pk_size.app_header_len > 0) { // Ignore server client checkups
-			printf("IRC Packet sniffed\n");
-			wrath_launch_generic(args, packet, package->payload);
+			fprintf(out, "IRC Packet sniffed\n");
+			wrath_launch_generic(args, packet, package->payload, out);
 		}
 	} else if (strcmp(op, "no-string") == 0) { // responds to any packet which has an application header
 		if (pk_size.app_header_len > 0)
-			wrath_launch_generic(args, packet, package->payload);
+			wrath_launch_generic(args, packet, package->payload, out);
 	} else if (strcmp(op, "\0") == 0 || strcmp (op, "tcp") == 0 || strcmp(op, "TCP") == 0) { // TCP is default
 			wrath_tcp_raw_build_and_launch(args, packet);
 	} else if (strcmp(op, "\0") != 0) { // generic case
 		if (strstr(app_begin, op) != NULL) {
-			printf("%s Packet sniffed\n", op);
-			wrath_launch_generic(args, packet, package->payload);	
+			fprintf(out, "%s Packet sniffed\n", op);
+			wrath_launch_generic(args, packet, package->payload, out);	
 		}
 	}
 }

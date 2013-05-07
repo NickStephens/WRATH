@@ -2,7 +2,7 @@
 #include "wrath-builders.h"
 #include "wrath-structs.h"
 
-void wrath_launch_generic(u_char *data_pass, const u_char *packet, u_char *payload) {
+void wrath_launch_generic(u_char *data_pass, const u_char *packet, u_char *payload, FILE *logfp) {
 
 	struct lcp_package *package = (struct lcp_package *) data_pass;
 	libnet_t *libnet_handle = package->libnet_handle;
