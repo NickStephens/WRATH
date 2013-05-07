@@ -12,7 +12,7 @@ void wrath_tcp_custom_build_and_launch(libnet_t *, struct in_addr, struct in_add
 /* builds a tcp header to support an upper level protocol 
  * above it, does not acknowledge TCP falgs from teh 
  * command line */
-void wrath_tcp_belly_build_and_launch(u_char *, const u_char *, unsigned char *, unsigned int, int);
+void wrath_tcp_belly_build_and_launch(u_char *, const u_char *, unsigned char *, unsigned int);
 
 /* prints information about the captured packet,
  * source ip
@@ -27,4 +27,4 @@ void wrath_tcp_belly_build_and_launch(u_char *, const u_char *, unsigned char *,
 void wrath_capture_stats(const u_char *);
 
 /* prints information about the spoofed attacker packet */
-void wrath_attack_packet_stats(const u_char *, int, int, int, int);
+void wrath_attack_packet_stats(const u_char *, int, int, int);

