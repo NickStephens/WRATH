@@ -91,7 +91,6 @@ void wrath_observe() {
 	}	
 
 	// finding and setting up logfile
-	FILE *fp;
 	if ((strcmp(user_values->logfile, "\0"))) {
 		fp = fopen(user_values->logfile, "w");
 		openned = 1;
@@ -114,7 +113,7 @@ void wrath_observe() {
 	if (openned) {
 		fprintf(fp, "Starting WRATH ...\n");
 		fprintf(fp, "Hijacking selected packets with ... \n");
-		fprintf(fp, "Payload:\n %s\n", chp->payload);
+		fprintf(fp, "Payload:\n%s\n", chp->payload);
 	}
 	
 	// seeding psuedorandom number generator
