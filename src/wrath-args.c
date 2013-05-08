@@ -64,6 +64,7 @@ void usage() {
 	printf("\t-f\texplicitly supply filter\n");
 	printf("\t-i\tinterface\n");
 	printf("\t-a\tattach input file as payload\n");
+	printf("\t-l\tlog output to the file specified\n");
 	printf("\t-tU\tmark tcp URG flag\n");
 	printf("\t-tA\tmark tcp ACK flag\n");
 	printf("\t-tP\tmark tcp PUSH flag\n");
