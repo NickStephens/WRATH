@@ -23,7 +23,7 @@ void wrath_launch_http_response(u_char *data_pass, const u_char *packet, u_char 
 
 	// launches forgered http response	
 	wrath_tcp_belly_build_and_launch(data_pass, packet, payload, (TH_PUSH + TH_ACK));
-	wrath_attack_packet_stats(iphdr, tcphdr, (TH_PUSH + TH_ACK), sizeof payload, logfp);
+	wrath_attack_packet_stats(iphdr, tcphdr, (TH_PUSH + TH_ACK), strlen(payload), logfp);
 		
 	// requests a connection tear-down
 	wrath_tcp_custom_build_and_launch(libnet_handle, iphdr->ip_dst, iphdr->ip_src, ntohs(tcphdr->th_dport),

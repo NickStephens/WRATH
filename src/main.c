@@ -14,17 +14,14 @@ pcap_t *pcap_handle;
 void wrath_observe();
 
 void wrath_terminate(int signal) {
-	FILE *out = openned ? fp : stdout;
-
-	fprintf(out, "\n");
-	fprintf(out, "Injection Statistics:\n");	
+	printf("\n");
+	printf("Injection Statistics:\n");	
 
 	struct libnet_stats l_stats;
-
 	libnet_stats(libnet_handle, &l_stats);
-	fprintf(out, "Packets Injected: %d\n", l_stats.packets_sent);
-	fprintf(out, "WRATH terminating...\n");	
-	
+	printf("Packets Injected: %d\n", l_stats.packets_sent);
+	printf("WRATH terminating...\n");	
+
 	if (openned)
 		fclose(fp);
 
@@ -93,6 +90,14 @@ void wrath_observe() {
 		strcpy(app_cmd, user_values->command);
 	}	
 
+	// finding and setting up logfile
+	FILE *fp;
+	if ((strcmp(user_values->logfile, "\0"))) {
+		fp = fopen(user_values->logfile, "w");
+		openned = 1;
+		chp->logfile = fp;
+	}
+
 	// converting and setting payload
 	char *app_cmd_con = (char *) malloc(strlen(app_cmd));
 	if (strcmp(app_cmd, "\0") != 0) { // if a payload was found
@@ -103,18 +108,18 @@ void wrath_observe() {
 		chp->payload = "\0";		
 	}
 
-	printf("Payload: %s\n", chp->payload);
+	printf("Starting WRATH ...\n");
+	printf("Hijacking selected packets with ... \n");
+	printf("Payload:\n%s\n", chp->payload);
+	if (openned) {
+		fprintf(fp, "Starting WRATH ...\n");
+		fprintf(fp, "Hijacking selected packets with ... \n");
+		fprintf(fp, "Payload:\n %s\n", chp->payload);
+	}
 	
 	// seeding psuedorandom number generator
 	libnet_seed_prand(libnet_handle);
 
-	// finding and setting up logfile
-	FILE *fp;
-	if ((strcmp(user_values->logfile, "\0"))) {
-		fp = fopen(user_values->logfile, "w");
-		int openned = 1;
-		chp->logfile = fp;
-	}
 
 	int cap_amount = -1;
 	if (user_values->count != 0) // if count is set
