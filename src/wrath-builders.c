@@ -2,7 +2,7 @@
 #include "wrath-structs.h"
  
 
-void wrath_tcp_raw_build_and_launch(u_char *args, const u_char *packet) {
+void wrath_tcp_raw_build_and_launch(u_char *args, const u_char *packet, FILE *out) {
 	struct lcp_package *package = (struct lcp_package *) args;
 	libnet_t *libnet_handle = package->libnet_handle;
 	struct arg_values *cline_args = package->cline_args;
@@ -12,8 +12,10 @@ void wrath_tcp_raw_build_and_launch(u_char *args, const u_char *packet) {
 
 	iphdr = (struct libnet_ipv4_hdr *) (packet + LIBNET_ETH_H);
 	tcphdr = (struct libnet_tcp_hdr *) (packet + LIBNET_ETH_H + LIBNET_TCP_H);
+	wrath_capture_stats(iphdr, tcphdr, out);
 
 	int tcp_sum = cline_args->tcp_syn + cline_args->tcp_fin + cline_args->tcp_ack + cline_args->tcp_psh + cline_args->tcp_urg + cline_args->tcp_rst;	
+	wrath_attack_packet_stats(iphdr, tcphdr, tcp_sum, 0, out);
 
 	/* building tcp header */
 	libnet_build_tcp( ntohs(tcphdr->th_dport), ntohs(tcphdr->th_sport), ntohl(tcphdr->th_ack),
