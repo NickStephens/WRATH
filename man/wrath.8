@@ -54,7 +54,7 @@ to the injected packet.
 MORE TO COME
 
 .SH APPLICATION HEADERS (PAYLOADS)
-Writing a payload demands knowing a cleartext protocol and know the protocols behaviours. It contains
+Writing a payload demands knowing a cleartext protocol and knowing the protocols behaviours in the wild. It contains
 all the data the recieving end expects, for example, a hijacked HTTP response's application header
 must contain an HTTP status code, HTTP version, and maybe other HTTP header variables; once these
 are declared in HTTP payload you may start writing the malicious html, javascript, css (ha, malicious 
@@ -82,6 +82,9 @@ on a victim's channel is posted.\n
 
 .SH DEPENDENCIES
 Wrath depends on libnet-1.3 and libpcap-1.1
+
+.SH ETYMOLOGY
+WRATH is an acronym for "What? Really? Another TCP Hijacker?" (special thanks to Max David) 
 
 .SH BUGS
 Report any bugs to Nick Stephens (nick.stephens93@gmail.com)
