@@ -1,0 +1,90 @@
+.TH wrath 8 "MAY 2013" Linux "WRATH"
+.SH NAME
+wrath \- generically hijack TCP connections occuring on your subnet.
+.SH SYNOPSIS
+.B wrath [-o 
+.I token|method
+.B ] [-a 
+.I application_header
+.B ] [-l 
+.I logfile
+.B ] [-n 
+.I number
+.B ] [-c
+.I command
+.B ] [-f
+.I explicit_filter_string
+.B ]
+.I filter_string 
+.SH DESCRIPTION
+.B wrath 
+takesover TCP connections on the subnet where the NIC is located.
+It watches network activity and inserts your custom payload or options
+into a TCP connection taking place. Using the Berkely Packet Filter syntax
+.B wrath
+is able to precisely target victims and other circumstances on the network.
+There is a subtle art to choosing a good filter string in combination with a 
+good token or hijack method, how well you're able to choose these values will 
+affect wrath's efficacy. See 
+.B EXAMPLES
+below for some pointers on effectively using
+.B wrath
+\.
+.SH OPTIONS
+.IP "-o operation or token"
+tell wrath what application header content to search for in victims connection.
+.S TAB
+\n
+\n
+.B OPERATIONS:
+\n
+o http-resp	hijacks HTTP responses (looks for requests)
+\n
+o http-rqst	hijacks HTTP request (looks for responses)
+\n
+o tcp	hijacks any TCP connection (allows you to mark flags)
+\n
+o no-sting	hijacks any packet recievers connection which contains some application data
+\n
+.IP "-a application_header"
+attach a custom payload described in
+.I application_header
+to the injected packet.
+
+MORE TO COME
+
+.SH APPLICATION HEADERS (PAYLOADS)
+Writing a payload demands knowing a cleartext protocol and know the protocols behaviours. It contains
+all the data the recieving end expects, for example, a hijacked HTTP response's application header
+must contain an HTTP status code, HTTP version, and maybe other HTTP header variables; once these
+are declared in HTTP payload you may start writing the malicious html, javascript, css (ha, malicious 
+css) into the application header.
+\n
+.SB See the appheaders directory in this package for some examples.
+
+.SH EXAMPLES
+\n
+# wrath -o http-resp -a appheader/http/takeover "src host 10.0.0.5 and port 80"\n
+\n
+This invokation will hijack active HTTP requests and forge a server response using
+the file 'appheaders/http/takeover' as the header of the response. The filter string
+specifies that the connection must be originating from 10.0.0.5 and either of machines 
+taking part in the connection must be on port 80. This is the most effective way to 
+forge server responses to a client on your subnet. Take note that we are hijacking the
+server's connection by only responding to packets sent by the local victim.\n
+\n
+# wrath -o PRIVMSG -o appheaders/irc/escalateprivs "dst host 192.168.1.13 and port 6667"\n
+\n
+This invokation will hijack an IRC user's connection and attach the escalateprivs content
+onto the injected packet, escalating the hijacker's priviledges to operator when a message
+on a victim's channel is posted.\n
+\n
+
+.SH DEPENDENCIES
+Wrath depends on libnet-1.3 and libpcap-1.1
+
+.SH BUGS
+Report any bugs to Nick Stephens (nick.stephens93@gmail.com)
+.SH AUTHOR
+Nick Stephens (nick.stephens93@gmail.com)
+

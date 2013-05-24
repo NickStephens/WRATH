@@ -1,6 +1,6 @@
 .*.swp
 *.txt
-papers/*
+resources/*
 objs/*
 wrath
 captures/*
