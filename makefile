@@ -1,6 +1,10 @@
 SRCS=src/main.c src/wrath-args.c src/wrath-reactor.c src/wrath-injector.c src/wrath-builders.c src/wrath-http.c src/wrath-generic-app.c
 OBJS=main.o wrath-args.o wrath-injector.o wrath-reactor.o wrath-builders.o wrath-http.o wrath-generic-app.o
 
+install: cleandir 
+	cp wrath /usr/sbin
+	cp man/wrath.8 /usr/share/man/man8
+	
 cleandir: wrath
 	  mv $(OBJS) objs	 
 
