@@ -19,6 +19,6 @@ compile: $(SRCS)
 clean: 
 	  rm $(OBJS) wrath
 
-install: compile
+install: 
 	cp wrath $(INSTALLDIR)
 	cp man/wrath.8 $(MANDIR)
