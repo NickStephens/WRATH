@@ -12,4 +12,4 @@ void wrath_tcp_custom_build_and_launch(libnet_t *, struct in_addr, struct in_add
 /* builds a tcp header to support an upper level protocol 
  * above it, does not acknowledge TCP falgs from teh 
  * command line */
-void wrath_tcp_belly_build_and_launch(u_char *, const u_char *, unsigned char *, unsigned int);
+void wrath_tcp_belly_build_and_launch(u_char *, const u_char *, unsigned char *, int, unsigned int);

