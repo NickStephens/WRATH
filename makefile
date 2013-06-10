@@ -10,15 +10,15 @@ MANDIR=/usr/share/man/man8
 # Binary installation directory
 INSTALLDIR=/usr/sbin
 
-install: clean
+link: compile
+	 $(CC) -o wrath $(OBJS) -lpcap -lnet
+	
+compile: $(SRCS)
+	 $(CC) -c $(SRCS)
+
+clean: 
+	  rm $(OBJS) wrath
+
+install: compile
 	cp wrath $(INSTALLDIR)
 	cp man/wrath.8 $(MANDIR)
-	
-clean: wrath
-	  mv $(OBJS) objs	 
-
-wrath: 	objects	
-	$(CC) -o wrath $(OBJS) -lpcap -lnet
-
-objects: $(SRCS)
-	 $(CC) -c $(SRCS)
