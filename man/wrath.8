@@ -51,7 +51,53 @@ attach a custom payload described in
 .I application_header
 to the injected packet.
 
-MORE TO COME
+.IP "-i interface"
+supply a networking interface to inject packets from.
+
+.IP "-l file"
+file to log hijack activity to.
+
+.IP "-f filter"
+explicity pass in a string describing a legal Berkely Packet Filter.
+
+.IP "-n number"
+the number of victim packets to hijack.
+
+.IP "-c command"
+provide a payload as an argument.
+
+.IP "-h"
+output the help file.
+
+.IP "-tR"
+mark the TCP RST flag of all attack packets. 
+.I Only effects the
+.B tcp
+.I operation.
+
+.IP "-tA"
+mark the TCP ACK flag of all attack packets.
+.I Only effects the
+.B tcp
+.I operation.
+
+.IP "-tF"
+mark the TCP FIN flag of all attack packets.
+.I Only effects the
+.B tcp
+.I operation.
+
+.IP "-tP"
+mark the TCP PSH flag of all attack packets.
+.I Only effects the
+.B tcp
+.I operation.
+
+.IP "-tU"
+mark the TCP URG flag of all attack packets.
+.I Only effects the
+.B tcp
+.I operation.
 
 .SH APPLICATION HEADERS (PAYLOADS)
 Writing a payload demands knowing a cleartext protocol and knowing the protocols behaviours in the wild. It contains
