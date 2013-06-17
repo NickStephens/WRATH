@@ -19,6 +19,10 @@ void arg_eval(int argc, char *argv[], struct arg_values *values) {
 	int i, c;
 
 	int cnt = 0;
+
+	if (argc < 2)
+		usage();
+
 	memset(values, 0x00, (sizeof (struct arg_values)));
 	while((i = getopt(argc, argv, "hn:o:c:i:f:t:a:l:")) != -1) {
 		switch(i) {
@@ -54,7 +58,7 @@ void arg_eval(int argc, char *argv[], struct arg_values *values) {
  * @param char *, a string with an error message
  */
 void usage() {
-	printf("usage: wrath [options] [filter]\n");
+	printf("usage: wrath [options] filter\n");
 	printf("example: wrath -o http-resp -a appheaders/takeover \"src host 10.0.0.7\"\n"); 
 	printf("\n");
 	printf("\t-h\tdisplay this help\n");
