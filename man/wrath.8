@@ -2,41 +2,23 @@
 .SH NAME
 wrath \- generically hijack TCP connections occuring on your subnet.
 .SH SYNOPSIS
-.B wrath [-o 
-.I token|method
-.B ] [-a 
-.I application_header
-.B ] [-l 
-.I logfile
-.B ] [-n 
-.I number
-.B ] [-c
-.I command
-.B ] [-f
-.I explicit_filter_string
-.B ]
-.I filter_string 
+.B wrath 
+.RI [ OPTIONS ]
+.I FILTER
 .SH DESCRIPTION
 .B wrath 
-takesover TCP connections on the subnet where the NIC is located.
-It watches network activity and inserts your custom payload or options
+takesover TCP connections on the selected interface's subnet.
+It watches network activity and inserts a custom payload or tcp-flags
 into a TCP connection taking place. Using the Berkely Packet Filter syntax
 .B wrath
 is able to precisely target victims and other circumstances on the network.
 There is a subtle art to choosing a good filter string in combination with a 
 good token or hijack method, how well you're able to choose these values will 
-affect wrath's efficacy. See 
-.B EXAMPLES
-below for some pointers on effectively using
-.B wrath
-\.
+affect wrath's efficacy. 
 .SH OPTIONS
-.IP "-o operation or token"
-tell wrath what application header content to search for in victims connection.
-.S TAB
-\n
-\n
-.B Operations:
+.SS Operations
+.IP "-o token"
+tell wrath what application header content to search for in victim's connection.
 \n
 o http-resp	hijacks HTTP responses (looks for requests)
 \n
@@ -44,8 +26,9 @@ o http-rqst	hijacks HTTP request (looks for responses)
 \n
 o tcp	hijacks any TCP connection (allows you to mark flags)
 \n
-o no-sting	hijacks any packet recievers connection which contains some application data
+o no-sting	hijacks any connection which contains some application data
 \n
+.SS General Options
 .IP "-a application_header"
 attach a custom payload described in
 .I application_header
@@ -69,35 +52,22 @@ provide a payload as an argument.
 .IP "-h"
 output the help file.
 
+.SS TCP Operation Specific Options
+
 .IP "-tR"
 mark the TCP RST flag of all attack packets. 
-.I Only effects the
-.B tcp
-.I operation.
 
 .IP "-tA"
 mark the TCP ACK flag of all attack packets.
-.I Only effects the
-.B tcp
-.I operation.
 
 .IP "-tF"
 mark the TCP FIN flag of all attack packets.
-.I Only effects the
-.B tcp
-.I operation.
 
 .IP "-tP"
 mark the TCP PSH flag of all attack packets.
-.I Only effects the
-.B tcp
-.I operation.
 
 .IP "-tU"
 mark the TCP URG flag of all attack packets.
-.I Only effects the
-.B tcp
-.I operation.
 
 .SH APPLICATION HEADERS (PAYLOADS)
 Writing a payload demands knowing a cleartext protocol and knowing the protocols behaviours in the wild. It contains
