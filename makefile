@@ -11,13 +11,13 @@ MANDIR=/usr/share/man/man8
 INSTALLDIR=/usr/sbin
 
 link: compile
-	 $(CC) -o wrath $(OBJS) -lpcap -lnet
+	 $(CC) $(CFLAGS) -o wrath $(OBJS) -lpcap -lnet
 	
 compile: $(SRCS)
-	 $(CC) -c $(SRCS)
+	 $(CC) $(CFLAGS) -c $(SRCS)
 
 clean: 
-	  rm $(OBJS) wrath
+	rm -f *.o wrath
 
 install: 
 	cp wrath $(INSTALLDIR)
