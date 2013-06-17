@@ -69,9 +69,9 @@ void usage() {
 	printf("\t-i\tinterface\n");
 	printf("\t-a\tattach input file as payload\n");
 	printf("\t-l\tlog output to the file specified\n");
-	printf("\t-tU\tmark tcp URG flag\n");
-	printf("\t-tA\tmark tcp ACK flag\n");
-	printf("\t-tP\tmark tcp PUSH flag\n");
+	printf("\t-tU\tmark tcp URG flag\n"); // consider taking these out
+	printf("\t-tA\tmark tcp ACK flag\n"); // and only documenting them
+	printf("\t-tP\tmark tcp PUSH flag\n"); // in the man page.
 	printf("\t-tR\tmark tcp RST flag\n");
 	printf("\t-tS\tmark tcp SYN flag\n");
 	printf("\t-tF\tmark tcp FIN flag\n");
@@ -81,5 +81,6 @@ void usage() {
 	printf("\t* http-rqst\t:: HTTP Request\n");
 	printf("\t* tcp\t\t:: bare tcp\n");
 	printf("\t* no-string\t:: any packet with application data\n");
+	printf("\t* <match>\t:: any packet whose application data contains $match\n");
 	exit(0);
 }
