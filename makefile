@@ -10,7 +10,7 @@ MANDIR=/usr/share/man/man8
 # Binary installation directory
 INSTALLDIR=/usr/sbin
 
-link: compile
+all: compile
 	 $(CC) $(CFLAGS) -o wrath $(OBJS) -lpcap -lnet
 	
 compile: $(SRCS)
