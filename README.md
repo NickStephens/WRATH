@@ -75,11 +75,6 @@ are still in plaintext. With WRATH we can easily snoop on these and forge data i
 beyond the TCP header with TLS is out-of-bounds, because of the way it authenticates data, you'd have to know the secret key
 of the transaction to properly pose as either host in the connection.
 
-#### Installation:
- git clone https://github.com/NickStephens/WRATH.git
-<br>  make
-<br>  sudo make install
-
 _Dependencies_: libnet v1.1.6, libpcap v1.3
 
 _Disclaimer_:
