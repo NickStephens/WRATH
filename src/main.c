@@ -108,14 +108,14 @@ void wrath_observe() {
 	}
 
 	printf("Starting WRATH ...\n");
-	printf("Hijacking selected packets with ... \n");
+	printf("Hijacking specified packets with ... \n");
 	//printf("Payload:\n%s\n", chp->payload);
 	printf("-----BEGINNING-OF-PAYLOAD-----\n");
 	printf(chp->payload);
 	printf("\n--------END-OF-PAYLOAD--------\n");
 	if (openned) {
 		fprintf(fp, "Starting WRATH ...\n");
-		fprintf(fp, "Hijacking selected packets with ... \n");
+		fprintf(fp, "Hijacking specified packets with ... \n");
 		fprintf(fp, "Payload:\n%s\n", chp->payload);
 		fprintf(fp, "-----BEGINNING-OF-PAYLOAD-----\n");
 		fprintf(fp, chp->payload);
