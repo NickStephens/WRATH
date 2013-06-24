@@ -6,6 +6,10 @@
 WRATH is a generic TCP hijacker capable of taking over TCP virtual circuits taking place 
 on your LAN and injecting fabricated data into the circuit.
 
+##### Installation
+* make all
+* sudo make install
+
 ##### What makes WRATH generic?
 
 WRATH is generic because it can hijack any unconfidential (unencrypted) or unauthorized
