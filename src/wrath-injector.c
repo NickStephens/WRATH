@@ -57,7 +57,7 @@ void wrath_inject(u_char *args, const struct pcap_pkthdr *cap_header, const u_ch
 		if (pk_size.app_header_len > 0)
 			wrath_launch_generic(args, packet, package->payload, pk_size.app_header_len, out);
 	} else if (strcmp(op, "\0") == 0 || strcmp (op, "tcp") == 0 || strcmp(op, "TCP") == 0) { // TCP is default
-			wrath_tcp_raw_build_and_launch(args, packet, out);
+			wrath_tcp_raw_build_and_launch(args, packet, pk_size.app_header_len, out);
 	} else if (strcmp(op, "\0") != 0) { // generic case
 		if (strstr(app_begin, op) != NULL) {
 			fprintf(out, "%s Packet sniffed\n", op);
