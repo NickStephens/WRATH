@@ -67,13 +67,15 @@ When WRATH sees a request made for a resource, it reads the request's source IP 
 port, TCP destination port, TCP sequence number, and TCP acknowledgement number. With this information it then crafts a
 packet to look like it belongs to the destination and within the same virtual circuit. 
 
-###### Where TLS Comes Into Play
+###### Where SSL/TLS Comes Into Play
 
-With TLS things become a bit more difficult for WRATH, and the presence of TLS on a virtual circuit definitely weakens
-WRATH's abilities; however the mere presence of TLS is not the end for WRATH. TCP's sequence and acknowledgement numbers
-are still in plaintext. With WRATH we can easily snoop on these and forge data inside the plain TCP header at-will. Anything
-beyond the TCP header with TLS is out-of-bounds, because of the way it authenticates data, you'd have to know the secret key
-of the transaction to properly pose as either host in the connection.
+With SSL/TLS things become a bit more difficult for WRATH, and the presence of SSL/TLS on a virtual circuit definitely weakens
+WRATH's abilities; however, the mere presence of SSL/TLS is not the end for WRATH. TCP's sequence and acknowledgement numbers
+are still in the clear. With WRATH we can easily snoop on these and forge data inside the exposed TCP header at-will. Anything
+beyond the TCP header with SSL/TLS is out-of-bounds.
+
+_TODO_:
+* Implement a SSL/TLS Renegotiation attack into WRATH
 
 _Dependencies_: libnet v1.1.6, libpcap v1.3
 
