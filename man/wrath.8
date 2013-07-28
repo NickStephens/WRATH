@@ -28,6 +28,7 @@ o tcp	hijacks any TCP connection (allows you to mark flags)
 \n
 o no-sting	hijacks any connection which contains some application data
 \n
+o *     generically hijack packets which contain the string specified by * in their application header
 .SS General Options
 .IP "-a application_header"
 attach a custom payload described in
@@ -70,11 +71,10 @@ mark the TCP PSH flag of all attack packets.
 mark the TCP URG flag of all attack packets.
 
 .SH APPLICATION HEADERS (PAYLOADS)
-Writing a payload demands knowing a cleartext protocol and knowing the protocols behaviours in the wild. It contains
+Writing a payload demands knowing the protocol and knowing the protocol's behaviours in the wild. It contains
 all the data the recieving end expects, for example, a hijacked HTTP response's application header
 must contain an HTTP status code, HTTP version, and maybe other HTTP header variables; once these
-are declared in HTTP payload you may start writing the malicious html, javascript, css (ha, malicious 
-css) into the application header.
+are declared in HTTP payload you may start writing the malicious html, javascript, and css into the application header.
 \n
 .SB See the appheaders directory in this package for some examples.
 
@@ -91,9 +91,10 @@ server's connection by only responding to packets sent by the local victim.\n
 \n
 # wrath -o PRIVMSG -o appheaders/irc/escalateprivs "dst host 192.168.1.13 and port 6667"\n
 \n
-This invokation will hijack an IRC user's connection and attach the escalateprivs content
-onto the injected packet, escalating the hijacker's priviledges to operator when a message
-on a victim's channel is posted.\n
+This invokation uses WRATH's generic hijacking feature to hijack an IRC user's (hopefully an operator's) connection  
+and attach the escalateprivs content onto the injected packet, escalating the hijacker's priviledges to operator when a 
+message on a victim's channel 
+is posted.\n
 \n
 
 .SH DEPENDENCIES
