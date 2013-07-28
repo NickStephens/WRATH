@@ -76,6 +76,7 @@ beyond the TCP header with SSL/TLS is out-of-bounds.
 
 _TODO_:
 * Implement a SSL/TLS Renegotiation attack into WRATH
+* Make generic hijacking capable of handle regex specification
 
 _Dependencies_: libnet v1.1.6, libpcap v1.3
 
