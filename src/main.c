@@ -83,11 +83,13 @@ void wrath_observe() {
 		if ((length = file_size(app_fd)) == -1)
 			fatal_error("getting file size");
 		app_cmd = (char *) safe_malloc(length);
-		read(app_fd, app_cmd, length);
+		read(app_fd, app_cmd, length-1);
+        app_cmd[length-1] = '\0';
 	} else if (!strcmp(user_values->command, "\0") != 0) { // If a command has been specified but not an input file
 		length = strlen(user_values->command);
 		app_cmd = (unsigned char *) safe_malloc(length);
 		strcpy(app_cmd, user_values->command);
+        app_cmd[length-1] = '\0';
 	}	
 
 	// finding and setting up logfile

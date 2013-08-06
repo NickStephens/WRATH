@@ -47,7 +47,7 @@ char *wrath_char_encode(char *str, char *new_str) {
 	char *top;
 	new_str = strcpy(new_str, str);
 	top = new_str;	
-	while (*new_str != '\0') {
+	while (*new_str) {
 		if (*new_str == '\\') {
 			++new_str;
 			if (*new_str == 'r')
